@@ -7,6 +7,9 @@
 #include "gene.hpp"
 #include "sample.hpp"
 #include "sigMask.hpp"
+//#include "geoParser.hpp"
+
+class GeoParser;
 
 using namespace arma;
 
@@ -50,10 +53,10 @@ class Gexpro {
   int n_genes;
 
   // data declarations
-  SpMat<double> &count_matrix;
-  Col<Gene> &genes;
-  Row<Sample> &samples;
-  SignificanceMask &mask;
+  SpMat<double>* count_matrix;
+  Col<double>* genes;
+  Row<double>* samples;
+  //SignificanceMask &mask;
 
   // statistic declarations
   double sparsity;

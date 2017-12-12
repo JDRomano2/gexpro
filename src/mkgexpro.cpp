@@ -4,15 +4,22 @@
 #include <string>
 
 #include "gexpro.hpp"
+//#include "parser.hpp"
+#include "geoParser.hpp"
 
 int main (int argc, char *argv[]) {
-  std::string gexproname = "test";
 
-  SpMat<double> &nameStr = sprandu(1000, 2000, 0.01);
-  Col<Gene>
-  Gexpro *g = new Gexpro(gexproname);
+  GeoParser parser;
 
-  std::cout << "Your Gexpro instance is named " << g->getName() << std::endl;
+  //std::string gexproname = "test";
+  //Gexpro *g = new Gexpro(gexproname);  
+  //std::cout << "Your Gexpro instance is named " << g->getName() << std::endl;
+
+  const std::string testpro_fname = "GDS1517_full.soft";
+  Gexpro gds1517 = parser.parseFile(testpro_fname);
+  //Gexpro gds1517 = parser.parseFile();
+
+  std::cout << "Your profile is named " << gds1517.getName() << std::endl;
   
   return 0;
 }
