@@ -52,6 +52,10 @@ class Gexpro {
   int n_samples;
   int n_genes;
 
+  std::string platformNameStr;
+  std::string sampleIdStr;
+  std::string seriesStr;
+
   // data declarations
   SpMat<double>* count_matrix;
   Col<double>* genes;
@@ -64,6 +68,10 @@ class Gexpro {
   
 public:
   Gexpro(std::string nameStr);
+
+  void setPlatformNameStr(const std::string str) { platformNameStr = str; }
+  void setSampleIdStr(const std::string str) { sampleIdStr = str; }
+  void setSeriesStr(const std::string str) { seriesStr = str; }
   
   std::string getName();
 };

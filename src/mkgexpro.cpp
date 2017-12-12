@@ -15,7 +15,7 @@ int main (int argc, char *argv[]) {
   //Gexpro *g = new Gexpro(gexproname);  
   //std::cout << "Your Gexpro instance is named " << g->getName() << std::endl;
 
-  const std::string testpro_fname = "GDS1517_full.soft";
+  const std::string testpro_fname = "../data/geo/GDS1517_full.soft";
   Gexpro gds1517 = parser.parseFile(testpro_fname);
   //Gexpro gds1517 = parser.parseFile();
 
