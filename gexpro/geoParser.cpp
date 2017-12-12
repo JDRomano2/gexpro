@@ -44,6 +44,9 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
       continue;
     }
   }
+  current_soft_file.close();
+  ifl = FILE_NOT_OPEN;
+
 
   return gexpr;
 }
