@@ -24,17 +24,18 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
     std::cout << "Successfully opened " << file_name << std::endl;
   else
     std::cout << "Couldn't open " << file_name << std::endl;
-  
+
+  // Iterate over file, parsing line by line
   std::string line;
   while (std::getline(current_soft_file, line)) {
     // get first character
 
     if (line[0] == '^') {
-      // ENTITY INDICATOR
+      // BEGIN ENTITY BLOCK
       GeoParser::parseEntityIndicatorLine(gexpr, line);
     } else if (line[0] == '!') {
       // ENTITY ATTRIBUTE
-      continue;
+      GeoParser::parseEntityAttributeLine(gexpr, line);
     }
     else if (line[0] == '#') {
       // DATA TABLE HEADER DESCRIPTION
@@ -64,15 +65,40 @@ void GeoParser::parseEntityIndicatorLine(Gexpro& gexpr, const std::string line) 
   iss >> remainder;
   
   if (identifier.compare("^PLATFORM")) {
+    current_attribute_block = PLATFORM;
     gexpr.setPlatformNameStr(remainder);
   } else if (identifier.compare("^SAMPLE")) {
+    current_attribute_block = SAMPLE;
     gexpr.setSampleIdStr(remainder);
   } else if (identifier.compare("^SERIES")) {
+    current_attribute_block = SERIES;
     gexpr.setSeriesStr(remainder);
-  }
+  } else if (identifier.compare("^DATABASE")) {
+    current_attribute_block = DATABASE;
+    // TODO
+  } else if (identifier.compare("^DATASET")) {
+    current_attribute_block = DATASET;
+    // TODO
+  } else if (identifier.compare("^SUBSET")) {
+    current_attribute_block = SUBSET;
+    // TODO
+  } else if (identifier.compare("^ANNOTATION")) {
+    current_attribute_block = ANNOTATION;
+    // TODO
+  } 
 }
 
 void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) {
+  std::cout << "Parsing entity attribute:" << std::endl;
+  std::cout << "  " << line << std::endl;
+
+  std::istringstream iss(line);
+  std::string identifier;
+  std::string eqsign;
+  std::string remainder;
+  iss >> identifier;
+  iss >> eqsign;
+  iss >> remainder;
 
 }
 
