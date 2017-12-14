@@ -217,9 +217,18 @@ void GeoParser::flushData(Gexpro& dest_gexpr) {
     for (int j = 0; j < 20; j++)
       sub_rdm[i][j] = std::stof(rdm[i][j+2]);
 
-  for (auto i = sub_rdm.begin(); i != sub_rdm.begin()+6; ++i) {
-    for (auto j = i->begin(); j != (*i).begin()+20; ++j) 
+  for (auto i = sub_rdm.begin(); i != sub_rdm.begin()+10; ++i) {
+    for (auto j = i->begin(); j != (*i).begin()+10; ++j) 
       std::cout << *j << ' ';
     std::cout << std::endl;
   }
+
+  // Now construct Armadillo matrix directly
+  fmat geo(&sub_rdm[0][0], 45101, 20, false);
+
+  // Test armadillo matrix:
+  fmat subgeo = geo.submat(0, 0, 10, 10);
+
+  std::cout << std::endl;
+  std::cout << subgeo << std::endl;
 }
