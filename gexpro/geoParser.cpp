@@ -32,14 +32,14 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
 
     if (line[0] == '^') {
       // BEGIN ENTITY BLOCK
-      GeoParser::parseEntityIndicatorLine(gexpr, line);
+      this->parseEntityIndicatorLine(gexpr, line);
     } else if (line[0] == '!') {
       // ENTITY ATTRIBUTE
-      GeoParser::parseEntityAttributeLine(gexpr, line);
+      this->parseEntityAttributeLine(gexpr, line);
     }
     else if (line[0] == '#') {
       // DATA TABLE HEADER DESCRIPTION
-      continue;
+      this->parseDataTableHeaderLine(gexpr, line);
     } else {
       // DATA TABLE CONTENT
       continue;
@@ -89,8 +89,8 @@ void GeoParser::parseEntityIndicatorLine(Gexpro& gexpr, const std::string line) 
 }
 
 void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) {
-  std::cout << "Parsing entity attribute:" << std::endl;
-  std::cout << "  " << line << std::endl;
+  //std::cout << "Parsing entity attribute:" << std::endl;
+  //std::cout << "  " << line << std::endl;
 
   std::istringstream iss(line);
   std::string identifier;
@@ -103,7 +103,16 @@ void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) 
 }
 
 void GeoParser::parseDataTableHeaderLine(Gexpro& gexpr, const std::string line) {
+  std::cout << "Parsing data header line:" << std::endl;
+  std::cout << "  " << line << std::endl;
 
+  std::istringstream iss(line);
+  std::string identifier;
+  std::string eqsign;
+  std::string remainder;
+  iss >> identifier;
+  iss >> eqsign;
+  iss >> remainder;
 }
 
 void GeoParser::parseDataTableContentLine(Gexpro& gexpr, const std::string line) {
