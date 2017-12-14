@@ -60,7 +60,7 @@ class Gexpro {
   SpMat<double>* count_matrix;
   Col<double>* genes;
   Row<double>* samples;
-  Mat<double>* raw_data_matrix;
+  std::vector<std::vector<std::string>>* raw_data_matrix;
   //SignificanceMask &mask;
 
   // statistic declarations
@@ -73,6 +73,8 @@ public:
   void setPlatformNameStr(const std::string str) { platformNameStr = str; }
   void setSampleIdStr(const std::string str) { sampleIdStr = str; }
   void setSeriesStr(const std::string str) { seriesStr = str; }
+
+  void setRawDataMatrix(std::vector<std::vector<std::string>>* rdm) { raw_data_matrix = rdm; }
   
   std::string getName();
 };

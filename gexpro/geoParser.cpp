@@ -30,10 +30,12 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
   while (std::getline(current_soft_file, line)) {
     // get first character
 
+    // ------------------READING DATA---------------------------
     if (reading_data_table == true) {
       if (line[0] == '!') {
 	reading_data_table = false;
 	this->flushData(gexpr);
+	std::cout << "Exiting data table read mode..." << std::endl;
 	continue;
       }
 
@@ -41,6 +43,7 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
       data_buffer.push_back(line);
     }
 
+    // ------------------READING METADATA-----------------------
     if (line[0] == '^') {
       // BEGIN ENTITY BLOCK
       this->parseEntityIndicatorLine(gexpr, line);
@@ -130,10 +133,6 @@ void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) 
       reading_data_table = true;
       return;
     }
-    if (line == "!dataset_table_end") {
-      reading_data_table = false;
-      return;
-    }
     
   } else if (current_attribute_block == AttributeBlock::SUBSET) {
 
@@ -160,13 +159,54 @@ void GeoParser::parseDataTableContentLine(Gexpro& gexpr, const std::string line)
 }
 
 void GeoParser::flushData(Gexpro& dest_gexpr) {
-  // matrix height
-  int ngenes = data_buffer.size() - 1; // first line is just the header
-  std::cout << "Number of genes in data table: " << ngenes << std::endl;
+  // find dimensions of data in buffer
+  int nrows = data_buffer.size() - 1; // first line is just the header
+  std::string field_delim = "\t";
   
+  std::vector<std::string> tok_header;
+  std::string header_line = data_buffer[0];
+
+  // we'll recycle these later in this method
+  size_t pos = 0;
+  std::string token;
   
+  while ((pos = header_line.find(field_delim)) != std::string::npos) {
+    token = header_line.substr(0, pos);
+    tok_header.push_back(token);
+    header_line.erase(0, pos+field_delim.length());
+  }
+
+  int ncols = tok_header.size();
+
+  std::cout << "DATA DIMENSIONS: " << nrows << "x" << ncols << std::endl;
+
+  std::vector<std::vector<std::string>> rdm(nrows, std::vector<std::string>(ncols));
+
+  unsigned int i = 0;
+  unsigned int j = 0;
   for (std::vector<std::string>::iterator it = data_buffer.begin()+1; it != data_buffer.end(); ++it) {
-    
+    size_t last = 0;
+    size_t next = 0;
+    while ((next = it->find(field_delim, last)) != std::string::npos) {
+      // DOES THIS EXTRACT THE LAST TOKEN OF THE STRING?
+      // SEE COMMENT ON https://stackoverflow.com/a/14266139/1730417
+      //std::cout << it.substr(last, next-last) << std::endl;
+      rdm[i][j] = it->substr(last, next-last);
+      last = next + 1;
+      j++;
+    }
+    j = 0;
+    i++;
   }
   std::cout << std::endl;
+
+  // Print a small portion of the table for debugging purposes:
+  /*
+  for (auto i = rdm.begin(); i != rdm.begin()+4; ++i) {
+    for (auto j = i->begin(); j != (*i).begin()+42; ++j) 
+      std::cout << *j << ' ';
+    std::cout << std::endl;
+  }
+  */
+  dest_gexpr.setRawDataMatrix(&rdm);
 }
