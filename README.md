@@ -1,4 +1,7 @@
 # `GEXPRO`
+
+[![Build Status](https://travis-ci.org/JDRomano2/gexpro.svg?branch=master)](https://travis-ci.org/JDRomano2/gexpro)
+
 ### An open-source utility for standardizing and serializing gene expression profiles from diverse sources
 
 Written by Joseph D. Romano
