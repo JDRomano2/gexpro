@@ -1,6 +1,7 @@
 # `GEXPRO`
 
 [![Build Status](https://travis-ci.org/JDRomano2/gexpro.svg?branch=master)](https://travis-ci.org/JDRomano2/gexpro)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 ### An open-source utility for standardizing and serializing gene expression profiles from diverse sources
 
