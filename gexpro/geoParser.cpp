@@ -201,12 +201,25 @@ void GeoParser::flushData(Gexpro& dest_gexpr) {
   std::cout << std::endl;
 
   // Print a small portion of the table for debugging purposes:
-  /*
   for (auto i = rdm.begin(); i != rdm.begin()+4; ++i) {
     for (auto j = i->begin(); j != (*i).begin()+42; ++j) 
       std::cout << *j << ' ';
     std::cout << std::endl;
   }
-  */
+
   dest_gexpr.setRawDataMatrix(&rdm);
+
+  // find subset of rdm that corresponds to data (not annotations
+  std::vector<std::vector<float>> sub_rdm(45101, std::vector<float>(20));
+
+  // Convert numerical data to Armadillo matrix
+  for (int i = 0; i < 45101; i++)
+    for (int j = 0; j < 20; j++)
+      sub_rdm[i][j] = std::stof(rdm[i][j+2]);
+
+  for (auto i = sub_rdm.begin(); i != sub_rdm.begin()+6; ++i) {
+    for (auto j = i->begin(); j != (*i).begin()+20; ++j) 
+      std::cout << *j << ' ';
+    std::cout << std::endl;
+  }
 }
