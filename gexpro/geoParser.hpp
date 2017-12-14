@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cstring>
 #include <cstddef>
+#include <vector>
 
 #include "gexpro.hpp"
 //#include "parser.hpp"
@@ -17,7 +18,7 @@ typedef enum InputFileLock {
 
 // FOR THE FOLLOWING, REFER TO:
 // https://www.ncbi.nlm.nih.gov/geo/info/overview.html
-typedef enum AttributeBlock {
+typedef enum class AttributeBlock {
   OUT_OF_BLOCK,  // maintain this state while not parsing
   DATABASE,      // information regarding GEO in general
   PLATFORM,      // metadata describing analysis platform (e.g., "Illumina HiSeq 2500 ...")
@@ -33,6 +34,8 @@ class GeoParser {
   std::ifstream current_soft_file;
   InputFileLock ifl = FILE_NOT_OPEN;
   AttributeBlock current_attribute_block;
+  bool reading_data_table = false;
+  std::vector<std::string> data_buffer;
 public:
   Gexpro parseFile(const std::string file_name);
 
@@ -40,6 +43,8 @@ public:
   void parseEntityAttributeLine(Gexpro& gexpr, const std::string line);
   void parseDataTableHeaderLine(Gexpro& gexpr, const std::string line);
   void parseDataTableContentLine(Gexpro& gexpr, const std::string line);
+
+  void flushData(Gexpro& dest_gexpr);
 
   GeoParser() = default;
 };

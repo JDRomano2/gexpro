@@ -60,6 +60,7 @@ class Gexpro {
   SpMat<double>* count_matrix;
   Col<double>* genes;
   Row<double>* samples;
+  Mat<double>* raw_data_matrix;
   //SignificanceMask &mask;
 
   // statistic declarations
