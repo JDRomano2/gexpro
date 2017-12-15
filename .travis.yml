@@ -1,7 +1,7 @@
 sudo: required
 
 before_install:
-  - sudo apt-get install cmake openblas-deve, lapack-devel, arpack-devel, SuperLU-devel
+  - sudo apt-get install cmake openblas-devel, lapack-devel, arpack-devel, SuperLU-devel
   - sudo apt-get install libarmadillo-dev
 
 language: c++
