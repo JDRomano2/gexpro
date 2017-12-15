@@ -49,7 +49,7 @@ class Gexpro {
   // metadata declarations
   std::string profile_name;
   std::string url;
-  ProfileSource source;
+  ExpressionDataType source;
   ExprBaseUnit base_unit;
   int n_samples;
   int n_genes;
