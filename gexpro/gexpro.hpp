@@ -14,13 +14,15 @@ class GeoParser;
 using namespace arma;
 
 
-typedef enum ProfileSource {
-  SOURCE_LINCS, // Include cmap, clue.io, LINCS l1000...
-  SOURCE_GTEX,
-  SOURCE_EBI_GXA,
-  SOURCE_GEO_OTHER,
-  SOURCE_MISC_OTHER,
-} ProfileSource;
+typedef enum ExpressionDataType {
+  TYPE_LINCS, // Include cmap, clue.io, LINCS l1000...
+  TYPE_GTEX,
+  TYPE_EBI_GXA,
+  TYPE_GEO_DATASET,
+  TYPE_GEO_PROFILE,
+  TYPE_GEO_OTHER,
+  TYPE_MISC_OTHER,
+} ExpressionDataType;
 
 
 // The default unit for each gene's expression value
