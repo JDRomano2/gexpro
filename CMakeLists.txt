@@ -3,7 +3,7 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.9.5)
 project(gexpro)
 
 set(CMAKE_CXX_STANDARD 11)
