@@ -1,5 +1,21 @@
+sudo: required
+
+before_install:
+  - sudo apt-get install cmake openblas-deve, lapack-devel, arpack-devel, SuperLU-devel
+  - sudo apt-get install libarmadillo-dev
+
 language: c++
+
 notifications:
   email:
     on_success: change
     on_failure: change
+
+compiler:
+  - clang
+
+script:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
