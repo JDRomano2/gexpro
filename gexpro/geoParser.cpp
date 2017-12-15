@@ -178,8 +178,6 @@ void GeoParser::flushData(Gexpro& dest_gexpr) {
 
   int ncols = tok_header.size();
 
-  std::cout << "DATA DIMENSIONS: " << nrows << "x" << ncols << std::endl;
-
   std::vector<std::vector<std::string>> rdm(nrows, std::vector<std::string>(ncols));
 
   unsigned int i = 0;
@@ -200,37 +198,15 @@ void GeoParser::flushData(Gexpro& dest_gexpr) {
   }
   std::cout << std::endl;
 
-  // Print a small portion of the table for debugging purposes:
-  // for (auto i = rdm.begin(); i != rdm.begin()+4; ++i) {
-  //   for (auto j = i->begin(); j != (*i).begin()+42; ++j) 
-  //     std::cout << *j << ' ';
-  //   std::cout << std::endl;
-  // }
-
   dest_gexpr.setRawDataMatrix(&rdm);
 
-  // find subset of rdm that corresponds to data (not annotations
-  std::vector<std::vector<float>> sub_rdm(45101, std::vector<float>(20));
+  // Initialize the matrix
+  fmat geo(45101, 20);
 
   // Convert numerical data to Armadillo matrix
   for (int i = 0; i < 45101; i++)
     for (int j = 0; j < 20; j++)
-      sub_rdm[i][j] = std::stof(rdm[i][j+2]);
+      geo(i,j) = std::stof(rdm[i][j+2]);
 
-  // for (auto i = sub_rdm.begin(); i != sub_rdm.begin()+10; ++i) {
-  //   for (auto j = i->begin(); j != (*i).begin()+10; ++j) 
-  //     std::cout << *j << ' ';
-  //   std::cout << std::endl;
-  // }
-
-  // Now construct Armadillo matrix directly
-  fmat geo(&sub_rdm[0][0], 45101, 20, false);
-
-  dest_gexpr.setDataMatrix(&geo);
-
-  // // Test armadillo matrix:
-  // fmat subgeo = geo.submat(0, 0, 10, 10);
-
-  // std::cout << std::endl;
-  // std::cout << subgeo << std::endl;
+  dest_gexpr.setDataMatrix(geo);
 }
