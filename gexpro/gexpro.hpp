@@ -57,11 +57,13 @@ class Gexpro {
   std::string seriesStr;
 
   // data declarations
-  SpMat<double>* count_matrix;
+  SpMat<double>* count_matrix; // eventual home for the signature
   Col<double>* genes;
   Row<double>* samples;
   std::vector<std::vector<std::string>>* raw_data_matrix;
   //SignificanceMask &mask;
+
+  fmat* data_matrix;
 
   // statistic declarations
   double sparsity;
@@ -75,8 +77,11 @@ public:
   void setSeriesStr(const std::string str) { seriesStr = str; }
 
   void setRawDataMatrix(std::vector<std::vector<std::string>>* rdm) { raw_data_matrix = rdm; }
+  void setDataMatrix(fmat* geo) { data_matrix = geo; }
+
+  void printDataHeader(int nrow=5, int ncol=5);
   
-  std::string getName();
+  std::string getName() { return profile_name; }
 };
 
 #endif
