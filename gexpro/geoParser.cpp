@@ -18,7 +18,7 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
   Gexpro gexpr = Gexpro(pro_name);
 
   // open file
-  current_soft_file = std::ifstream(file_name);
+  current_soft_file.open(file_name);
   ifl = FILE_OPEN;
   if (current_soft_file.good())
     std::cout << "Successfully opened " << file_name << std::endl;
@@ -114,16 +114,12 @@ void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) 
 
   // branch based on current attribute block
   if (current_attribute_block == AttributeBlock::PLATFORM) {
-
     
   } else if (current_attribute_block == AttributeBlock::SAMPLE) {
 
-
   } else if (current_attribute_block == AttributeBlock::SERIES) {
 
-
   } else if (current_attribute_block == AttributeBlock::DATABASE) {
-
     // For now, skip this block - it just talks about GEO
   } else if (current_attribute_block == AttributeBlock::DATASET) {
 
@@ -188,7 +184,6 @@ void GeoParser::flushData(Gexpro& dest_gexpr) {
     while ((next = it->find(field_delim, last)) != std::string::npos) {
       // DOES THIS EXTRACT THE LAST TOKEN OF THE STRING?
       // SEE COMMENT ON https://stackoverflow.com/a/14266139/1730417
-      //std::cout << it.substr(last, next-last) << std::endl;
       rdm[i][j] = it->substr(last, next-last);
       last = next + 1;
       j++;
