@@ -13,9 +13,11 @@ void Gexpro::dumpMatrix() {
   // First iteration: just write to csv file
   std::string fname_out = "csv_file.csv";
 
-  std::cout << std::endl;
-  std::cout << "NUMBER OF ROWS: " << data_matrix.n_rows << std::endl;
-  std::cout << "NUMBER OF COLUMNS: " << data_matrix.n_cols << std::endl;
+  if (FLAG_VERBOSE) {
+    std::cout << std::endl;
+    std::cout << "NUMBER OF ROWS: " << data_matrix.n_rows << std::endl;
+    std::cout << "NUMBER OF COLUMNS: " << data_matrix.n_cols << std::endl;
+  }
 
   data_matrix.save(fname_out, raw_ascii);
 }

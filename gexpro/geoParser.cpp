@@ -1,5 +1,8 @@
 #include "geoParser.hpp"
 
+extern int FLAG_VERBOSE;
+
+
 constexpr unsigned int str2int(const char* str, int h = 0) {
   // see: https://stackoverflow.com/a/16388610/1730417
   return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
@@ -12,18 +15,19 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
   std::string fname_no_path = file_name.substr(found+1);
   const std::string pro_name = fname_no_path.substr(0, fname_no_path.find(delim));
   
-  std::cout << "Creating expression profile with the name \"" << pro_name << "\"" << std::endl;
-
-  // Allocate a new gene expression profile
+    // Allocate a new gene expression profile
   Gexpro gexpr = Gexpro(pro_name);
 
   // open file
   current_soft_file.open(file_name);
   ifl = FILE_OPEN;
-  if (current_soft_file.good())
-    std::cout << "Successfully opened " << file_name << std::endl;
-  else
+  if (current_soft_file.good()) {
+    if (FLAG_VERBOSE)
+      std::cout << "Successfully opened " << file_name << std::endl;
+  } else {
     std::cout << "Couldn't open " << file_name << std::endl;
+    abort();
+  }
 
   // Iterate over file, parsing line by line
   std::string line;
@@ -35,7 +39,8 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
       if (line[0] == '!') {
 	reading_data_table = false;
 	this->flushData(gexpr);
-	std::cout << "Exiting data table read mode..." << std::endl;
+	if (FLAG_VERBOSE)
+	  std::cout << "Exiting data table read mode..." << std::endl;
 	continue;
       }
 
@@ -67,8 +72,10 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
 }
 
 void GeoParser::parseEntityIndicatorLine(Gexpro& gexpr, const std::string line) {
-  std::cout << "NEW BLOCK: ";
-  std::cout << line << std::endl;
+  if (FLAG_VERBOSE) {
+    std::cout << "NEW BLOCK: ";
+    std::cout << line << std::endl;
+  }
   
   std::istringstream iss(line);
   std::string identifier;
@@ -123,9 +130,9 @@ void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) 
     // For now, skip this block - it just talks about GEO
   } else if (current_attribute_block == AttributeBlock::DATASET) {
 
-    std::cout << "  DATASET ATTRIBUTE: " << line << std::endl;
+    if (FLAG_VERBOSE)
+      std::cout << "  DATASET ATTRIBUTE: " << line << std::endl;
     if (line == "!dataset_table_begin") {
-      std::cout << "Switching to data table read mode..." << std::endl;
       reading_data_table = true;
       return;
     }
@@ -139,7 +146,8 @@ void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) 
 }
 
 void GeoParser::parseDataTableHeaderLine(Gexpro& gexpr, const std::string line) {
-  std::cout << "  DATA HEADER: " << line << std::endl;
+  if (FLAG_VERBOSE)
+    std::cout << "  DATA HEADER: " << line << std::endl;
 
   std::istringstream iss(line);
   std::string identifier;
@@ -191,7 +199,6 @@ void GeoParser::flushData(Gexpro& dest_gexpr) {
     j = 0;
     i++;
   }
-  std::cout << std::endl;
 
   dest_gexpr.setRawDataMatrix(&rdm);
 

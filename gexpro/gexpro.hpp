@@ -7,7 +7,8 @@
 #include "gene.hpp"
 #include "sample.hpp"
 #include "sigMask.hpp"
-//#include "geoParser.hpp"
+
+extern int FLAG_VERBOSE;
 
 class GeoParser;
 
