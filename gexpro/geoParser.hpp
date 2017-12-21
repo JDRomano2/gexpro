@@ -6,10 +6,23 @@
 #include <fstream>
 #include <cstring>
 #include <cstddef>
+#include <cstdlib>
+#include <cstdio>
 #include <vector>
+#include <stdio.h>
+#include <curl/curl.h>
+#include <archive.h>
+#include <archive_entry.h>
+#include <sys/stat.h>
+
+#include <boost/iostreams/filtering_stream.hpp>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
 
 #include "gexpro.hpp"
-//#include "parser.hpp"
+
+#define GEO_BASE_URL "ftp://ftp.ncbi.nlm.nih.gov/geo/"
+
 
 typedef enum InputFileLock {
   FILE_NOT_OPEN,
@@ -38,6 +51,8 @@ class GeoParser {
   std::vector<std::string> data_buffer;
 public:
   Gexpro parseFile(const std::string file_name);
+  Gexpro parseFile(const boost::iostreams::filtering_istream* gzstream, std::string proname);
+  Gexpro downloadGeoFile(const std::string id);
 
   void parseEntityIndicatorLine(Gexpro& gexpr, const std::string line);
   void parseEntityAttributeLine(Gexpro& gexpr, const std::string line);

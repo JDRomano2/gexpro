@@ -20,7 +20,8 @@ typedef enum ExpressionDataType {
   TYPE_GTEX,
   TYPE_EBI_GXA,
   TYPE_GEO_DATASET,
-  TYPE_GEO_PROFILE,
+  TYPE_GEO_SAMPLE,
+  TYPE_GEO_SERIES,
   TYPE_GEO_OTHER,
   TYPE_MISC_OTHER,
 } ExpressionDataType;
@@ -74,6 +75,7 @@ class Gexpro {
   
 public:
   Gexpro(std::string nameStr);
+  Gexpro() = default;
 
   void setPlatformNameStr(const std::string str) { platformNameStr = str; }
   void setSampleIdStr(const std::string str) { sampleIdStr = str; }

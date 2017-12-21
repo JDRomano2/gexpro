@@ -3,6 +3,11 @@
 extern int FLAG_VERBOSE;
 
 
+size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+  size_t written = fwrite(ptr, size, nmemb, stream);
+  return written;
+}
+
 constexpr unsigned int str2int(const char* str, int h = 0) {
   // see: https://stackoverflow.com/a/16388610/1730417
   return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
@@ -67,8 +72,94 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
   current_soft_file.close();
   ifl = FILE_NOT_OPEN;
 
+  return gexpr;
+}
+
+Gexpro GeoParser::parseFile(const boost::iostreams::filtering_istream* gzstream, std::string proname) {
+  Gexpro gexpr = Gexpro(proname);
 
   return gexpr;
+}
+
+Gexpro GeoParser::downloadGeoFile(const std::string id) {
+  Gexpro downloaded;
+
+  // recognize type of file
+  std::string first3 = id.substr(0,3);
+  std::string last3 = id.substr(id.length()-3,3);
+  std::string between = id.substr(3,id.length()-6);
+
+  std::cout << "FIRST 3: " << first3 << std::endl;
+  //std::cout << "LAST 3: " << last3 << std::endl;
+  //std::cout << "BETWEEN: " << between << std::endl;
+
+  std::cout << first3.compare("GSE") << std::endl;
+
+  ExpressionDataType edt;
+  std::string url;
+  std::string fname = std::string(id)+".soft.gz";
+
+  if      ( first3.compare("GSE") == 0 )
+    edt = TYPE_GEO_SERIES;
+  else if ( first3.compare("GDS") == 0 )
+    edt = TYPE_GEO_DATASET;
+  else if ( first3.compare("GSM") == 0 )
+    edt = TYPE_GEO_SAMPLE;
+  else
+    edt = TYPE_GEO_OTHER;
+
+  std::cout << edt << std::endl;
+
+  switch (edt) {
+  case TYPE_GEO_SERIES:
+    url = std::string(GEO_BASE_URL)+"series/GSE"+between+"nnn/"+id+"/soft/"+id+"_family.soft.gz";
+    break;
+  case TYPE_GEO_DATASET:
+    break;
+  case TYPE_GEO_SAMPLE:
+    break;
+  case TYPE_GEO_OTHER:
+    break;
+  default:
+    std::cout << "Error: Unable to detect sample type." << std::endl;
+    abort();
+  }
+
+  std::cout << url << std::endl;
+
+  // DOWNLOAD THE FILE
+  // combination of two code samples:
+  // https://stackoverflow.com/a/1636415/1730417
+  // http://en.cppreference.com/w/cpp/io/c/tmpfile
+  CURL *curl;
+  FILE *fp;
+  CURLcode res;
+  const char *c_url = url.c_str();
+  char outfilename[FILENAME_MAX];
+  strcpy(outfilename, fname.c_str());
+  curl = curl_easy_init();
+  if (curl) {
+    fp = fopen(outfilename, "wb");
+    curl_easy_setopt(curl, CURLOPT_URL, c_url);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+    res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+    fclose(fp);
+  }
+
+  std::ifstream file(fname, std::ios_base::in | std::ios_base::binary);
+  try {
+    boost::iostreams::filtering_istream in;
+    in.push(boost::iostreams::gzip_decompressor());
+    in.push(file);
+    std::string str;
+    downloaded = parseFile(&in, id);
+  } catch(const boost::iostreams::gzip_error& e) {
+    std::cout << e.what() << '\n';
+  }
+
+  return downloaded;
 }
 
 void GeoParser::parseEntityIndicatorLine(Gexpro& gexpr, const std::string line) {

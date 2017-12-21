@@ -9,12 +9,13 @@ project(gexpro)
 set(CMAKE_CXX_STANDARD 11)
 
 # Compilation
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -lz")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 # Documentation
-if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
+#if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
+if(0)
   option(BUILD_DOC "Build doxygen documnetation" ON)
   
   find_package(Doxygen)
