@@ -264,7 +264,7 @@ void GeoParser::flushData(Gexpro& dest_gexpr) {
   // we'll recycle these later in this method
   size_t pos = 0;
   std::string token;
-  
+
   while ((pos = header_line.find(field_delim)) != std::string::npos) {
     token = header_line.substr(0, pos);
     tok_header.push_back(token);
@@ -273,6 +273,7 @@ void GeoParser::flushData(Gexpro& dest_gexpr) {
 
   int ncols = tok_header.size();
 
+  // Holds the raw (string) data
   std::vector<std::vector<std::string>> rdm(nrows, std::vector<std::string>(ncols));
 
   unsigned int i = 0;
@@ -296,7 +297,7 @@ void GeoParser::flushData(Gexpro& dest_gexpr) {
   // Initialize the matrix
   fmat geo(45101, 20);
 
-  // Convert numerical data to Armadillo matrix
+  // Convert (string) data to Armadillo matrix (float)
   for (int i = 0; i < 45101; i++)
     for (int j = 0; j < 20; j++)
       geo(i,j) = std::stof(rdm[i][j+2]);

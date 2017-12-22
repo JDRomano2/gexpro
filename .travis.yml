@@ -6,6 +6,7 @@ before_install:
   - sudo apt-get install liblapack-dev
   - sudo apt-get install libarpack2-dev
   - sudo apt-get install libarmadillo-dev
+  - sudo apt-get install libboost-all-dev
 
 language: c++
 
