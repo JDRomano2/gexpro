@@ -11,8 +11,6 @@
 #include <vector>
 #include <stdio.h>
 #include <curl/curl.h>
-#include <archive.h>
-#include <archive_entry.h>
 #include <sys/stat.h>
 
 #include <boost/iostreams/filtering_stream.hpp>
@@ -49,18 +47,26 @@ class GeoParser {
   AttributeBlock current_attribute_block;
   bool reading_data_table = false;
   std::vector<std::string> data_buffer;
+
 public:
+  // Top-level parsing functions
   Gexpro parseFile(const std::string file_name);
   Gexpro parseFile(const boost::iostreams::filtering_istream* gzstream, std::string proname);
   Gexpro downloadGeoFile(const std::string id);
 
+  // Utility functions
+  ExpressionDataType detectDataType(std::string fnameOrURL) { return TYPE_GEO_SERIES };  // need to implement
+
+  // Parse components of a SOFT file
   void parseEntityIndicatorLine(Gexpro& gexpr, const std::string line);
   void parseEntityAttributeLine(Gexpro& gexpr, const std::string line);
   void parseDataTableHeaderLine(Gexpro& gexpr, const std::string line);
   void parseDataTableContentLine(Gexpro& gexpr, const std::string line);
 
+  // Misc
   void flushData(Gexpro& dest_gexpr);
 
+  // Constructors
   GeoParser() = default;
 };
 

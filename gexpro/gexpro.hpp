@@ -26,20 +26,17 @@ typedef enum ExpressionDataType {
   TYPE_MISC_OTHER,
 } ExpressionDataType;
 
-
 // The default unit for each gene's expression value
 typedef enum ExprBaseUnit {
   UNIT_COUNT,
   UNIT_Z_SCORE
 } ExprBaseUnit;
 
-
 typedef enum PlatformClass {
   PLATFORM_MICROARRAY,
   PLATFORM_RNA_SEQ,
   PLATFORM_QPCR,
 } PlatformClass;
-
 
 typedef struct ProfileDims {
   int n_genes;

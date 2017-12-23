@@ -1,6 +1,6 @@
 # CMAKE stuff
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+  set(CMAKE_BUILD_TYPE Debug)
 endif()
 
 cmake_minimum_required(VERSION 3.9.2)
@@ -14,8 +14,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 # Documentation
-#if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
-if(0)
+if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
   option(BUILD_DOC "Build doxygen documnetation" ON)
   
   find_package(Doxygen)
