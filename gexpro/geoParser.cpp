@@ -14,6 +14,10 @@ constexpr unsigned int str2int(const char* str, int h = 0) {
 }
 
 Gexpro GeoParser::parseFile(const std::string file_name) {
+  // Given a file_name, fill the current Gexpro object with that file's contents
+
+  std::cout << "Trying to open file: " << file_name << std::endl;;
+  
   // Default profile name: the file name without the extension
   const std::string delim = ".";
   std::size_t found = file_name.find_last_of("/\\");
@@ -40,10 +44,10 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
     // get first character
 
     // ------------------READING DATA---------------------------
-    if (reading_data_table == true) {
+    if (reading_dataset_table == true) {
       if (line[0] == '!') {
-	reading_data_table = false;
-	this->flushData(gexpr);
+	reading_dataset_table = false;
+	this->flushDataset(gexpr);
 	if (FLAG_VERBOSE)
 	  std::cout << "Exiting data table read mode..." << std::endl;
 	continue;
@@ -71,12 +75,6 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
   }
   current_soft_file.close();
   ifl = FILE_NOT_OPEN;
-
-  return gexpr;
-}
-
-Gexpro GeoParser::parseFile(const boost::iostreams::filtering_istream* gzstream, std::string proname) {
-  Gexpro gexpr = Gexpro(proname);
 
   return gexpr;
 }
@@ -148,13 +146,69 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
     fclose(fp);
   }
 
+  // PARSE THE FILE
+  // See: https://stackoverflow.com/a/6421029/1730417
   std::ifstream file(fname, std::ios_base::in | std::ios_base::binary);
   try {
+    std::cout << "Attempting to decompress file..." << std::endl;
     boost::iostreams::filtering_istream in;
     in.push(boost::iostreams::gzip_decompressor());
     in.push(file);
     std::string str;
-    downloaded = parseFile(&in, id);
+    std::cout << "Decompressed file, now I'll try to parse it..." << std::endl;
+    //downloaded = parseFile(in, id);
+
+    // Iterate over file, parsing line by line
+    std::string line;
+    for (line; std::getline(in, line); ) {
+      // get first character
+
+      // ------------------READING SAMPLE-----------------------------
+      if (reading_sample_table == true) {
+	if (line[0] == '!') {
+	  reading_sample_table = false;
+	  this->flushSample(downloaded);
+	  if (FLAG_VERBOSE)
+	    std::cout << "Finished reading sample data, continuing..." << std::endl;
+	  continue;
+	}
+
+	data_buffer.push_back(line);
+      }
+
+      // ------------------READING DATABASE---------------------------
+      if (reading_dataset_table == true) {
+	if (line[0] == '!') {
+	  reading_dataset_table = false;
+	  this->flushDataset(downloaded);
+	  if (FLAG_VERBOSE)
+	    std::cout << "Exiting data table read mode..." << std::endl;
+	  continue;
+	}
+
+	// Read a line of data
+	data_buffer.push_back(line);
+      }
+
+      // ------------------READING METADATA-----------------------
+      if (line[0] == '^') {
+	// BEGIN ENTITY BLOCK
+	this->parseEntityIndicatorLine(downloaded, line);
+      } else if (line[0] == '!') {
+	// ENTITY ATTRIBUTE
+	this->parseEntityAttributeLine(downloaded, line);
+      }
+      else if (line[0] == '#') {
+	// DATA TABLE HEADER DESCRIPTION
+	this->parseDataTableHeaderLine(downloaded, line);
+      } else {
+	// DATA TABLE CONTENT
+	continue;
+      }
+    }
+    //current_soft_file.close();
+    ifl = FILE_NOT_OPEN;
+    
   } catch(const boost::iostreams::gzip_error& e) {
     std::cout << e.what() << '\n';
   }
@@ -163,10 +217,12 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
 }
 
 void GeoParser::parseEntityIndicatorLine(Gexpro& gexpr, const std::string line) {
-  if (FLAG_VERBOSE) {
-    std::cout << "NEW BLOCK: ";
-    std::cout << line << std::endl;
-  }
+  // if (FLAG_VERBOSE) {
+  //   std::cout << "NEW BLOCK: ";
+  //   std::cout << line << std::endl;
+  // }
+  std::cout << "NEW BLOCK: ";
+  std::cout << line << std::endl;
   
   std::istringstream iss(line);
   std::string identifier;
@@ -214,9 +270,16 @@ void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) 
   if (current_attribute_block == AttributeBlock::PLATFORM) {
     
   } else if (current_attribute_block == AttributeBlock::SAMPLE) {
-
+    
+    if (FLAG_VERBOSE)
+      std::cout << "  SAMPLE ATTRIBUTE: " << line << std::endl;
+    if (line == "!sample_table_begin") {
+      reading_sample_table = true;
+      return;
+    }
+    
   } else if (current_attribute_block == AttributeBlock::SERIES) {
-
+    
   } else if (current_attribute_block == AttributeBlock::DATABASE) {
     // For now, skip this block - it just talks about GEO
   } else if (current_attribute_block == AttributeBlock::DATASET) {
@@ -224,7 +287,7 @@ void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) 
     if (FLAG_VERBOSE)
       std::cout << "  DATASET ATTRIBUTE: " << line << std::endl;
     if (line == "!dataset_table_begin") {
-      reading_data_table = true;
+      reading_dataset_table = true;
       return;
     }
     
@@ -253,7 +316,7 @@ void GeoParser::parseDataTableContentLine(Gexpro& gexpr, const std::string line)
 
 }
 
-void GeoParser::flushData(Gexpro& dest_gexpr) {
+void GeoParser::flushDataset(Gexpro& dest_gexpr) {
   // find dimensions of data in buffer
   int nrows = data_buffer.size() - 1; // first line is just the header
   std::string field_delim = "\t";
@@ -303,4 +366,26 @@ void GeoParser::flushData(Gexpro& dest_gexpr) {
       geo(i,j) = std::stof(rdm[i][j+2]);
 
   dest_gexpr.setDataMatrix(geo);
+}
+
+void GeoParser::flushSample(Gexpro& dest_gexpr) {
+  int nrows = data_buffer.size() - 1;
+  std::string field_delim = "\t";
+
+  size_t pos = 0;
+  std::string token;
+
+  for (std::vector<std::string>::iterator it = data_buffer.begin()+1; it != data_buffer.end(); ++it) {
+    // get the first (id) and second (value) tokens
+    std::string current_sample_id = "TEST";
+    
+    std::string current_row = *it;
+    std::istringstream iss(current_row);
+    std::vector<std::string> tokens;
+    copy(std::istream_iterator<std::string>(iss),
+	 std::istream_iterator<std::string>(),
+	 std::back_inserter(tokens));
+    // create gene if needed, otherwise append to it
+    dest_gexpr.addSampleValueToGene(tokens[0], current_sample_id, tokens[1]);
+  }
 }

@@ -3,6 +3,8 @@
 
 #include <string>
 #include <armadillo>
+#include <map>
+#include <cassert>
 
 #include "gene.hpp"
 #include "sample.hpp"
@@ -43,6 +45,13 @@ typedef struct ProfileDims {
   int n_samples;
 } ProfileDims;
 
+typedef struct SampleGene {
+  std::vector<std::string> sample_ids;
+  std::vector<std::string> values;
+  //std::vector<char> abs_call;
+  //std::vector<float> det_pval;
+} SampleGene;
+
 
 class Gexpro {
   // metadata declarations
@@ -58,11 +67,14 @@ class Gexpro {
   std::string seriesStr;
 
   // data declarations
-  SpMat<double>* count_matrix; // eventual home for the signature
-  Col<double>* genes;
-  Row<double>* samples;
+  // profile data
+  SpMat<double>* count_matrix;
+  Col<double>* genesIdx;
+  Row<double>* samplesIdx;
   std::vector<std::vector<std::string>>* raw_data_matrix;
-  //SignificanceMask &mask;
+
+  // sample data
+  std::map<std::string,SampleGene> genes;
 
   fmat data_matrix;
 
@@ -74,12 +86,17 @@ public:
   Gexpro(std::string nameStr);
   Gexpro() = default;
 
+  // Setters
   void setPlatformNameStr(const std::string str) { platformNameStr = str; }
   void setSampleIdStr(const std::string str) { sampleIdStr = str; }
   void setSeriesStr(const std::string str) { seriesStr = str; }
 
   void setRawDataMatrix(std::vector<std::vector<std::string>>* rdm) { raw_data_matrix = rdm; }
   void setDataMatrix(fmat geo) { data_matrix = geo; }
+
+  // Related to Samples
+  void addSampleValueToGene(std::string gene_id, std::string sample, std::string value);
+  void alignGenes();
 
   void printDataHeader(int nrow=5, int ncol=5);
   void dumpMatrix();
