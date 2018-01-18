@@ -6,6 +6,8 @@
 #include <map>
 #include <cassert>
 
+#include <boost/foreach.hpp>
+
 #include "gene.hpp"
 #include "sample.hpp"
 #include "sigMask.hpp"
@@ -15,6 +17,9 @@ extern int FLAG_VERBOSE;
 class GeoParser;
 
 using namespace arma;
+
+
+
 
 
 typedef enum ExpressionDataType {
@@ -53,6 +58,9 @@ typedef struct SampleGene {
 } SampleGene;
 
 
+template class std::map<std::string,SampleGene>;
+
+
 class Gexpro {
   // metadata declarations
   std::string profile_name;
@@ -69,8 +77,9 @@ class Gexpro {
   // data declarations
   // profile data
   SpMat<double>* count_matrix;
-  Col<double>* genesIdx;
-  Row<double>* samplesIdx;
+  std::vector<std::string>* genesIdx;
+  std::vector<std::string>* samplesIdx;
+  // outer dim: genes. inner dim: samples.
   std::vector<std::vector<std::string>>* raw_data_matrix;
 
   // sample data
@@ -96,12 +105,15 @@ public:
 
   // Related to Samples
   void addSampleValueToGene(std::string gene_id, std::string sample, std::string value);
-  void alignGenes();
+  void alignGeneData();
 
   void printDataHeader(int nrow=5, int ncol=5);
   void dumpMatrix();
   
   std::string getName() { return profile_name; }
+  int getNSamples() { return samplesIdx->size(); }
+  int getNGenes() { return genesIdx->size(); }
+  std::vector<std::vector<std::string>>* getRDM() { return raw_data_matrix; }
 };
 
 #endif

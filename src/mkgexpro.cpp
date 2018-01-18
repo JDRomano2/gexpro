@@ -71,7 +71,7 @@ int main (int argc, char* argv[]) {
 
   //const std::string pro_fname = "../data/geo/GDS1517_full.soft";
   //Gexpro gds1517 = parser.parseFile(pro_fname);
-  const std::string pro_id = "GSE1145";
+  const std::string pro_id = "GSE3678";
   Gexpro gds1517 = parser.downloadGeoFile(pro_id);
 
   // Write data matrix to text file

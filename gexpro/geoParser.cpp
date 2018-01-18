@@ -213,6 +213,8 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
     std::cout << e.what() << '\n';
   }
 
+  downloaded.alignGeneData();
+
   return downloaded;
 }
 
@@ -276,6 +278,8 @@ void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) 
     if (line == "!sample_table_begin") {
       reading_sample_table = true;
       return;
+    } else if (line == "!sample_table_end") {
+      // Flush data
     }
     
   } else if (current_attribute_block == AttributeBlock::SERIES) {
@@ -375,6 +379,7 @@ void GeoParser::flushSample(Gexpro& dest_gexpr) {
   size_t pos = 0;
   std::string token;
 
+  // Iterate over each row of data for the Sample
   for (std::vector<std::string>::iterator it = data_buffer.begin()+1; it != data_buffer.end(); ++it) {
     // get the first (id) and second (value) tokens
     std::string current_sample_id = "TEST";
@@ -388,4 +393,7 @@ void GeoParser::flushSample(Gexpro& dest_gexpr) {
     // create gene if needed, otherwise append to it
     dest_gexpr.addSampleValueToGene(tokens[0], current_sample_id, tokens[1]);
   }
+
+  // Reset data buffer
+  data_buffer.clear();
 }
