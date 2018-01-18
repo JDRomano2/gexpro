@@ -11,15 +11,13 @@
 #include "gene.hpp"
 #include "sample.hpp"
 #include "sigMask.hpp"
+#include "normalizer.hpp"
 
 extern int FLAG_VERBOSE;
 
 class GeoParser;
 
 using namespace arma;
-
-
-
 
 
 typedef enum ExpressionDataType {
@@ -87,6 +85,8 @@ class Gexpro {
 
   fmat data_matrix;
 
+  Normalizer normalizer;
+
   // statistic declarations
   double sparsity;
   ProfileDims dim;
@@ -109,7 +109,7 @@ public:
 
   void printDataHeader(int nrow=5, int ncol=5);
   void dumpMatrix();
-  
+
   std::string getName() { return profile_name; }
   int getNSamples() { return samplesIdx->size(); }
   int getNGenes() { return genesIdx->size(); }
