@@ -19,7 +19,7 @@ else(ZLIB_FOUND)
 endif(ZLIB_FOUND)
 
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost REQUIRED COMPONENTS system iostreams)
+find_package(Boost REQUIRED COMPONENTS system iostreams program_options)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
   set(requiredlibs ${requiredlibs} ${Boost_LIBRARIES})

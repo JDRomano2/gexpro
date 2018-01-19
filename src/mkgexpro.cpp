@@ -9,76 +9,83 @@
 #include "gexpro.hpp"
 #include "geoParser.hpp"
 
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
+
 int FLAG_VERBOSE;
 int FLAG_HELP;
 
+std::string ver_msg = "GEXPRO VERSION: 0.1a";
+
 
 int main (int argc, char* argv[]) {
-  
-  int c;
-  std::string pro_fname;
 
-  // Long form for getopt
-  while (1) {
-    static struct option long_options[] = {
-      /* Flags */
-      {"verbose", no_argument, &FLAG_VERBOSE, 1},
-      {"brief", no_argument, &FLAG_VERBOSE, 0},
-      {"help", no_argument, &FLAG_HELP, 1},
-      /* non-flag arguments */
-      {"infile", required_argument, 0, 'f'},
-      {0, 0, 0, 0}
-    };
-    int option_index = 0;
+  try {
+    po::options_description general_opts("General options");
+    general_opts.add_options()
+      ("help,h", "Show this help message")
+      ("version", "Display GEXPRO library version and exit")
+      ("verbose,v", "Enable verbose console output")
+      ("quiet,q", "Suppress all console output (overrides verbose option)")
+      ;
 
-    c = getopt_long(argc, argv, "f:",
-		    long_options, &option_index);
+    po::options_description io_opts("Input/output options");
+    io_opts.add_options()
+      ("geo-accession,G", po::value<std::string>(), "Provide an accession string to retrieve from GEO")
+      ("geo-file,g", po::value<std::string>(), "Load a GEO SOFT file from a local directory")
+      ("output,o", po::value<std::string>(), "Set output directory for created file(s)")
+      ;
 
-    /* if we've parsed all of the options */
-    if (c == -1)
-      break;
+    po::options_description data_opts("Data processing options");
+    data_opts.add_options()
+      ("normalize,n", "Normalize raw values by the best method available")
+      ;
 
-    switch (c) {
-    case 0:
-      if (long_options[option_index].flag != 0)
-	break;
-      std::cout << "option " << long_options[option_index].name;
-      if (optarg)
-	std::cout << " with arg " << optarg;
-      std::cout << std::endl;
-      break;
+    po::options_description all("Allowed options");
+    all.add(general_opts).add(io_opts).add(data_opts);
 
-    case 'f':
-      std::cout << "Input filename with value: `" << optarg << "'" << std::endl;
-      pro_fname = optarg;
-      break;
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, all), vm);
+    po::notify(vm);
 
-    case '?':
-      // We've already printed the error message
-      break;
-
-    default:
-      return 1;
+    if (vm.count("help")) {
+      std::cout << all << std::endl;
+      return 0;
     }
+    if (vm.count("version")) {
+      std::cout << ver_msg << std::endl;
+      return 0;
+    }
+
+    if (vm.count("quiet")) {
+      std::cout.setstate(std::ios_base::failbit);
+    }
+
+
+    
+    GeoParser parser;
+
+    //const std::string pro_fname = "../data/geo/GDS1517_full.soft";
+    //Gexpro gds1517 = parser.parseFile(pro_fname);
+    const std::string pro_id = "GSE3678";
+    Gexpro gds1517 = parser.downloadGeoFile(pro_id);
+
+    // Test normalization
+    gds1517.normalizeFromDataMatrix();
+
+    // Write data matrix to text file
+    gds1517.dumpMatrix();
+
+
+    
+    if (vm.count("quiet")) {
+      std::cout.clear();
+    }
+    
+  } catch(std::exception& e) {
+    std::cout << e.what() << std::endl;
+    return 1;
   }
-
-  if (FLAG_HELP) {
-    std::cout << "mkgexpro -- a utility for creating GEXPRO objects" << std::endl;
-    return 0;
-  }
-
-  GeoParser parser;
-
-  //const std::string pro_fname = "../data/geo/GDS1517_full.soft";
-  //Gexpro gds1517 = parser.parseFile(pro_fname);
-  const std::string pro_id = "GSE3678";
-  Gexpro gds1517 = parser.downloadGeoFile(pro_id);
-
-  // Test normalization
-  gds1517.normalizeFromDataMatrix();
-
-  // Write data matrix to text file
-  gds1517.dumpMatrix();
   
   return 0;
 }
