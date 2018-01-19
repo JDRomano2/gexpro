@@ -42,14 +42,14 @@ void Gexpro::alignGeneData() {
 
   this->setRawDataMatrix(&rdm);
 
-  for(int i = 0; i < sidx.size(); i++) {
+  for(size_t i = 0; i < sidx.size(); i++) {
     std::cout << (*raw_data_matrix)[0][i] << std::endl;
   }
 
   fmat geo(gidx.size(), sidx.size());
 
-  for(int i = 0; i < gidx.size(); i++)
-    for (int j = 0; j < sidx.size(); j++)
+  for(size_t i = 0; i < gidx.size(); i++)
+    for (size_t j = 0; j < sidx.size(); j++)
       geo(i,j) = std::stof(rdm[i][j]);
 
   this->setDataMatrix(geo);
@@ -75,13 +75,9 @@ void Gexpro::dumpMatrix() {
 }
 
 void Gexpro::normalizeFromDataMatrix() {
-  std::cout << "Normalizing dataset currently loaded into GEXPRO." << std::endl;
-  std::cout << "Dimensions: " << data_matrix.n_rows << " " << data_matrix.n_cols << std::endl;
   normalizer.initializeWithKnownDimensions( data_matrix.n_rows );
   data_matrix.each_col( [this](fvec& a){ normalizer.update(a); } );
   normalizer.finalize();
-  std::cout << "Mean gene 0: " << normalizer.getMean()[0] << std::endl;
-  std::cout << "Variance gene 0: " << normalizer.getVariance()[0] << std::endl;
-  //std::cout << "Mean:     " << normalizer.getMean() << std::endl;
-  //std::cout << "Variance: " << normalizer.getVariance() << std::endl;
+  std::cout << "Mean:     " << normalizer.getMean() << std::endl;
+  std::cout << "Variance: " << normalizer.getVariance() << std::endl;
 }
