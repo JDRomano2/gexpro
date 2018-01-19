@@ -74,6 +74,9 @@ int main (int argc, char* argv[]) {
   const std::string pro_id = "GSE3678";
   Gexpro gds1517 = parser.downloadGeoFile(pro_id);
 
+  // Test normalization
+  gds1517.normalizeFromDataMatrix();
+
   // Write data matrix to text file
   gds1517.dumpMatrix();
   

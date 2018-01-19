@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 11)
 # Compilation
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -lz")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_RELEASE "-O0")
 
 # Documentation
 if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")

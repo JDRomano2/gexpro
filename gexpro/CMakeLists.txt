@@ -35,6 +35,6 @@ else(ARMADILLO_FOUND)
   set(requiredlibs ${requiredlibs} ${ARMADILLO_LIBRARIES})
 endif(ARMADILLO_FOUND)
 
-add_library(gexpro gexpro.cpp geoParser.cpp)
+add_library(gexpro gexpro.cpp geoParser.cpp normalizer.cpp)
 
 target_link_libraries(gexpro ${ARMADILLO_LIBRARIES} ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${Boost_LIBRARIES})

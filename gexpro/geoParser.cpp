@@ -87,12 +87,6 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
   std::string last3 = id.substr(id.length()-3,3);
   std::string between = id.substr(3,id.length()-6);
 
-  std::cout << "FIRST 3: " << first3 << std::endl;
-  //std::cout << "LAST 3: " << last3 << std::endl;
-  //std::cout << "BETWEEN: " << between << std::endl;
-
-  std::cout << first3.compare("GSE") << std::endl;
-
   ExpressionDataType edt;
   std::string url;
   std::string fname = std::string(id)+".soft.gz";
@@ -105,8 +99,6 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
     edt = TYPE_GEO_SAMPLE;
   else
     edt = TYPE_GEO_OTHER;
-
-  std::cout << edt << std::endl;
 
   switch (edt) {
   case TYPE_GEO_SERIES:

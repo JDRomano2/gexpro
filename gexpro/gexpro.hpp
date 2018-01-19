@@ -63,10 +63,6 @@ class Gexpro {
   // metadata declarations
   std::string profile_name;
   std::string url;
-  ExpressionDataType source;
-  ExprBaseUnit base_unit;
-  int n_samples;
-  int n_genes;
 
   std::string platformNameStr;
   std::string sampleIdStr;
@@ -74,7 +70,6 @@ class Gexpro {
 
   // data declarations
   // profile data
-  SpMat<double>* count_matrix;
   std::vector<std::string>* genesIdx;
   std::vector<std::string>* samplesIdx;
   // outer dim: genes. inner dim: samples.
@@ -86,10 +81,6 @@ class Gexpro {
   fmat data_matrix;
 
   Normalizer normalizer;
-
-  // statistic declarations
-  double sparsity;
-  ProfileDims dim;
   
 public:
   Gexpro(std::string nameStr);
@@ -109,6 +100,10 @@ public:
 
   void printDataHeader(int nrow=5, int ncol=5);
   void dumpMatrix();
+
+  void normalizeFromDataMatrix();
+  // TODO:
+  // void normalizeFromDataDirectory(params...)
 
   std::string getName() { return profile_name; }
   int getNSamples() { return samplesIdx->size(); }

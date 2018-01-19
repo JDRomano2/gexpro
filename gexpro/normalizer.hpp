@@ -28,10 +28,15 @@ class Normalizer {
   NormAggregate agg;
   NormResults res;
 public:
-  void update(fvec newValue);
+  void update(fvec& newValue);
   void finalize();
 
   Normalizer() = default;
+
+  void initializeWithKnownDimensions(unsigned int ng);
+
+  fvec& getMean() { return res.mean; }
+  fvec& getVariance() { return res.variance; }
 };
 
 #endif

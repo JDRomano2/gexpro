@@ -17,7 +17,6 @@ void Gexpro::alignGeneData() {
   // In this method, we take the contents of `genes` and build the data matrix
   // This method MUST validate the contents of `genes`.
   
-  std::cout << "Beginning to align data in GEXPRO object." << std::endl;
   std::pair<std::string, SampleGene> me;
   std::vector<std::string> gidx;
   std::vector<std::string> sidx = genes.begin()->second.sample_ids;
@@ -34,13 +33,9 @@ void Gexpro::alignGeneData() {
 
   int i = 0;
   for (auto const& g_name : gidx) {
-    std::cout << g_name << std::endl;
     rdm[i] = genes[g_name].values;
     i++;
   }
-
-  std::cout << "NUMBER OF SAMPLES: " << sidx.size() << std::endl;
-  std::cout << "NUMBER OF GENES:   " << gidx.size() << std::endl;
 
   samplesIdx = &sidx;
   genesIdx = &gidx;
@@ -77,4 +72,16 @@ void Gexpro::dumpMatrix() {
   }
 
   data_matrix.save(fname_out, raw_ascii);
+}
+
+void Gexpro::normalizeFromDataMatrix() {
+  std::cout << "Normalizing dataset currently loaded into GEXPRO." << std::endl;
+  std::cout << "Dimensions: " << data_matrix.n_rows << " " << data_matrix.n_cols << std::endl;
+  normalizer.initializeWithKnownDimensions( data_matrix.n_rows );
+  data_matrix.each_col( [this](fvec& a){ normalizer.update(a); } );
+  normalizer.finalize();
+  std::cout << "Mean gene 0: " << normalizer.getMean()[0] << std::endl;
+  std::cout << "Variance gene 0: " << normalizer.getVariance()[0] << std::endl;
+  //std::cout << "Mean:     " << normalizer.getMean() << std::endl;
+  //std::cout << "Variance: " << normalizer.getVariance() << std::endl;
 }
