@@ -6,6 +6,19 @@ endif()
 cmake_minimum_required(VERSION 3.9.2)
 project(gexpro)
 
+# Set version number
+set(gexpro_VERSION_MAJOR 1)
+set(gexpro_VERSION_MINOR 0)
+
+# Add version info to a header file
+configure_file (
+  "${PROJECT_SOURCE_DIR}/gexpro/gexproConfig.hpp.in"
+  "${PROJECT_BINARY_DIR}/gexpro/gexproConfig.hpp"
+  )
+
+# Add the binary tree to the search path
+include_directories("${PROJECT_BINARY_DIR}")
+
 set(CMAKE_CXX_STANDARD 11)
 
 # Compilation
@@ -32,9 +45,5 @@ if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
     message("Doxygen needs to be installed for generating documentation")
   endif(DOXYGEN_FOUND)
 endif()
-
-# Gexpro stuff
-set(gexpro_VERSION_MAJOR 1)
-set(gexpro_VERSION_MINOR 0)
 
 subdirs(gexpro src)

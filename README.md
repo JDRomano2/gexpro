@@ -9,9 +9,9 @@ Written by Joseph D. Romano
 
 Copyright (c) 2017 by the Tatonetti Lab
 
-## Introduction
+## Motivation
 
-Differential expression analysis looks at cells in two states---usually one being a 'normal' or wild-type state, and the other being affected by a disease, drug, or other perturbation---and captures snapshots of which genes are currently being expressed in those cells, and to what levels they are being expressed. There are many public datasets of differential expression published on public data repositories, available for anyone to use.
+Differential expression analysis looks at cells in two (or more) states---usually one being a 'normal' or wild-type state, and the other being affected by a disease, drug, or other perturbation---and captures snapshots of which genes are currently being expressed in those cells, and to what levels they are being expressed. There are many public datasets of differential expression published on public data repositories, available for anyone to use.
 
 `GEXPRO` is a software package designed to make working with differential expression data easier. This software is currently in a 'pre-alpha' stage of development, but new features will be added rapidly. Some of the planned features for `GEXPRO` include the following:
 
@@ -20,6 +20,36 @@ Differential expression analysis looks at cells in two states---usually one bein
 - Plugins for running a variety of analyses on loaded data, with the ability for users to add new plugins easily
 - Size-efficient serialized representation for large collections of expression profiles
 - Visualization utilities for expression profiles
+
+## Installation
+
+```
+git clone https://github.com/JDRomano2/gexpro
+cd gexpro
+mkdir build && cd build
+cmake ..
+make
+```
+
+### Prerequisites
+
+`GEXPRO`'s prerequisites are available for most modern UNIX distributions. Unfortunately, we do not yet support Windows.
+
+- CMake (v3.9.2 or greater)
+- Boost libraries for C++
+- Armadillo linear algebra library for C++
+- zlib
+- libcurl
+
+## Tests
+
+Stay tuned...
+
+## Contribute
+
+We encourage contributions from the public. Since `GEXPRO` is still very preliminary, we recommend waiting until the core functionality is a bit more stable, which will hopefully be quite soon!
+
+To contribute, please submit a Pull Request.
 
 ## License
 

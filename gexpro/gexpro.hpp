@@ -12,12 +12,16 @@
 #include "sample.hpp"
 #include "sigMask.hpp"
 #include "normalizer.hpp"
+//#include "gexproConfig.hpp"  <-- can't get this to work...
 
 extern int FLAG_VERBOSE;
 
 class GeoParser;
 
 using namespace arma;
+
+#define Gexpro_VERSION_MAJOR  1
+#define Gexpro_VERSION_MINOR  0
 
 
 typedef enum ExpressionDataType {
