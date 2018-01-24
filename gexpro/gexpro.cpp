@@ -16,7 +16,7 @@ void Gexpro::addSampleValueToGene(std::string gene_id, std::string sample, std::
 void Gexpro::alignGeneData() {
   // In this method, we take the contents of `genes` and build the data matrix
   // This method MUST validate the contents of `genes`.
-  
+
   std::pair<std::string, SampleGene> me;
   std::vector<std::string> gidx;
   std::vector<std::string> sidx = genes.begin()->second.sample_ids;
@@ -42,9 +42,10 @@ void Gexpro::alignGeneData() {
 
   this->setRawDataMatrix(&rdm);
 
-  for(size_t i = 0; i < sidx.size(); i++) {
-    std::cout << (*raw_data_matrix)[0][i] << std::endl;
-  }
+  // Print values for first gene
+  // for(size_t i = 0; i < sidx.size(); i++) {
+  //   std::cout << (*raw_data_matrix)[0][i] << std::endl;
+  // }
 
   fmat geo(gidx.size(), sidx.size());
 
@@ -57,12 +58,12 @@ void Gexpro::alignGeneData() {
 
 void Gexpro::printDataHeader(int nrow, int ncol) {
   fmat subgeo = data_matrix.submat(0, 0, nrow, ncol);
-  std::cout << subgeo << std::endl;
+  //std::cout << subgeo << std::endl;
 }
 
-void Gexpro::dumpMatrix() {
+void Gexpro::dumpMatrix(std::string fname_prefix) {
   std::string extension = ".csv";
-  std::string fname_out = profile_name + extension;
+  std::string fname_out = fname_prefix + extension;
 
   if (FLAG_VERBOSE) {
     std::cout << std::endl;
@@ -71,13 +72,17 @@ void Gexpro::dumpMatrix() {
     std::cout << "Saving output to: " << fname_out << std::endl;
   }
 
-  data_matrix.save(fname_out, raw_ascii);
+  data_matrix.save(fname_out, csv_ascii);
 }
 
 void Gexpro::normalizeFromDataMatrix() {
   normalizer.initializeWithKnownDimensions( data_matrix.n_rows );
+  std::cout << "Finding mean and variance for each gene..." << std::endl;
   data_matrix.each_col( [this](fvec& a){ normalizer.update(a); } );
   normalizer.finalize();
-  std::cout << "Mean:     " << normalizer.getMean() << std::endl;
-  std::cout << "Variance: " << normalizer.getVariance() << std::endl;
+  std::cout << "  ...done." << std::endl;
+  //std::cout << "Mean:     " << normalizer.getMean() << std::endl;
+  //std::cout << "Variance: " << normalizer.getVariance() << std::endl;
+
+  normalizer.normalizeData(data_matrix);
 }

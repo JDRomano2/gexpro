@@ -16,6 +16,23 @@ void Normalizer::finalize() {
     res.variance.fill(datum::nan);
   else
     res.variance = variance;
+  res.std_dev = sqrt(res.variance);
+}
+
+void Normalizer::normalizeData(fmat& data) {
+  // Make sure we have computed mean and variance
+  // TODO
+
+  std::cout << "Gene 1, sample 1: " << data(0,0) << std::endl;
+
+  std::cout << "Normalizing each gene's values..." << std::endl;
+  data.each_col( [this](fvec& c) { c = ((c - res.mean)/res.std_dev) ;} );
+  std::cout << "  ...done." << std::endl;
+
+  std::cout << "Gene 1 mean: " << res.mean[0] << std::endl;
+  std::cout << "Gene 1 variance: " << res.variance[0] << std::endl;
+  std::cout << "Gene 1 stddev: " << res.std_dev[0] << std::endl;
+  std::cout << "Gene 1, sample 1 normalized: " << data(0,0) << std::endl;
 }
 
 void Normalizer::initializeWithKnownDimensions(unsigned int ng) {

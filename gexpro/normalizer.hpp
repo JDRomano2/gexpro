@@ -17,6 +17,7 @@ typedef struct NormAggregate {
 typedef struct NormResults {
   fvec mean;
   fvec variance;
+  fvec std_dev;
 } NormResults;
 
 
@@ -30,6 +31,7 @@ class Normalizer {
 public:
   void update(fvec& newValue);
   void finalize();
+  void normalizeData(fmat& data);
 
   Normalizer() = default;
 

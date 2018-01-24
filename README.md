@@ -7,7 +7,7 @@
 
 Written by Joseph D. Romano
 
-Copyright (c) 2017 by the Tatonetti Lab
+Copyright (c) 2018 by the Tatonetti Lab
 
 ## Motivation
 

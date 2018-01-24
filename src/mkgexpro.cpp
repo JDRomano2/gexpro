@@ -16,6 +16,28 @@ int FLAG_VERBOSE;
 int FLAG_HELP;
 
 
+void validateOptions(po::options_description& all_opts, po::variables_map& vm) {
+  // Print user configuration
+  std::cout << std::endl;
+  std::cout << "GEXPRO CONFIGURATION" << std::endl;
+  std::cout << "version " << Gexpro_VERSION_MAJOR << "." << Gexpro_VERSION_MINOR << std::endl;
+  std::cout << std::endl;
+  std::cout << "VERBOSE: " << (bool)(vm.count("verbose")) << std::endl;
+
+  std::cout << std::endl;
+
+  // Validate
+  if (vm.count("geo-accession") && vm.count("geo-file")) {
+    std::cout << "ERROR: " << std::endl;
+    std::cout << "Specify either GEO accession or GEO file, not both." << std::endl;
+  }
+  if (!(vm.count("geo-accession")) && !(vm.count("geo-file"))) {
+    std::cout << "ERROR: " << std::endl;
+    std::cout << "Must provide either a GEO accession or a local path to a GEO SOFT file." << std::endl;
+  }
+}
+
+
 int main (int argc, char* argv[]) {
 
   try {
@@ -64,7 +86,7 @@ int main (int argc, char* argv[]) {
     }
 
     // Validate arguments
-    
+    validateOptions(all, vm);
 
     // Handle program logic
 
@@ -79,7 +101,8 @@ int main (int argc, char* argv[]) {
       if (vm.count("normalize")) {
         geosoft.normalizeFromDataMatrix();
       }
-      geosoft.dumpMatrix();
+      // write matrix to file
+      geosoft.dumpMatrix( vm["geo-accession"].as<std::string>() );
     }
 
 

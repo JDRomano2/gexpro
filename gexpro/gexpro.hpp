@@ -103,7 +103,7 @@ public:
   void alignGeneData();
 
   void printDataHeader(int nrow=5, int ncol=5);
-  void dumpMatrix();
+  void dumpMatrix(std::string fname_prefix);
 
   void normalizeFromDataMatrix();
   // TODO:

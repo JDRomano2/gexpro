@@ -16,7 +16,7 @@ constexpr unsigned int str2int(const char* str, int h = 0) {
 Gexpro GeoParser::parseFile(const std::string file_name) {
   // Given a file_name, fill the current Gexpro object with that file's contents
 
-  std::cout << "Trying to open file: " << file_name << std::endl;;
+  //std::cout << "Trying to open file: " << file_name << std::endl;;
   
   // Default profile name: the file name without the extension
   const std::string delim = ".";
@@ -115,8 +115,6 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
     abort();
   }
 
-  std::cout << url << std::endl;
-
   // DOWNLOAD THE FILE
   // combination of two code samples:
   // https://stackoverflow.com/a/1636415/1730417
@@ -142,12 +140,13 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
   // See: https://stackoverflow.com/a/6421029/1730417
   std::ifstream file(fname, std::ios_base::in | std::ios_base::binary);
   try {
-    std::cout << "Attempting to decompress file..." << std::endl;
+    std::cout << "Successfully downloaded file from URL " << url << std::endl;
+    std::cout << "Decompressing..." << std::endl;
     boost::iostreams::filtering_istream in;
     in.push(boost::iostreams::gzip_decompressor());
     in.push(file);
     std::string str;
-    std::cout << "Decompressed file, now I'll try to parse it..." << std::endl;
+    std::cout << "  ...completed" << std::endl;
     //downloaded = parseFile(in, id);
 
     // Iterate over file, parsing line by line
