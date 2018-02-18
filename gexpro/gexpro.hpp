@@ -109,9 +109,11 @@ public:
   // TODO:
   // void normalizeFromDataDirectory(params...)
 
-  std::string getName() { return profile_name; }
+  std::string getName() const { return profile_name; }
   int getNSamples() { return samplesIdx->size(); }
   int getNGenes() { return genesIdx->size(); }
+  std::vector<std::string>* getFeatureNames() const { return genesIdx; }
+  std::vector<std::string>* getSampleNames() const { return samplesIdx; }
   std::vector<std::vector<std::string>>* getRDM() { return raw_data_matrix; }
 };
 

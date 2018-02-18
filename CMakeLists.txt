@@ -10,11 +10,11 @@ project(gexpro)
 set(gexpro_VERSION_MAJOR 1)
 set(gexpro_VERSION_MINOR 0)
 
-# Add version info to a header file
-configure_file (
-  "${PROJECT_SOURCE_DIR}/gexpro/gexproConfig.hpp.in"
-  "${PROJECT_BINARY_DIR}/gexpro/gexproConfig.hpp"
-  )
+# # Add version info to a header file
+# configure_file (
+#   "${PROJECT_SOURCE_DIR}/gexpro/gexproConfig.hpp.in"
+#   "${PROJECT_BINARY_DIR}/gexpro/gexproConfig.hpp"
+#   )
 
 # Add the binary tree to the search path
 include_directories("${PROJECT_BINARY_DIR}")

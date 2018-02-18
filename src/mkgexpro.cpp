@@ -3,10 +3,12 @@
 #include <math.h>
 #include <string>
 #include <getopt.h>
+#include <future>
 
 #include <archive.h>
 
 #include "gexpro.hpp"
+#include "multiGexpro.hpp"
 #include "geoParser.hpp"
 
 #include <boost/program_options.hpp>
@@ -15,16 +17,30 @@ namespace po = boost::program_options;
 int FLAG_VERBOSE;
 int FLAG_HELP;
 
+void advance_cursor() {
+  static int pos=0;
+  char cursor[4] = {'/','-','\\','|'};
+  printf("%c\b", cursor[pos]);
+  fflush(stdout);
+  pos = (pos+1) % 4;
+}
 
 void validateOptions(po::options_description& all_opts, po::variables_map& vm) {
-  // Print user configuration
-  std::cout << std::endl;
-  std::cout << "GEXPRO CONFIGURATION" << std::endl;
-  std::cout << "version " << Gexpro_VERSION_MAJOR << "." << Gexpro_VERSION_MINOR << std::endl;
-  std::cout << std::endl;
-  std::cout << "VERBOSE: " << (bool)(vm.count("verbose")) << std::endl;
+  //std::cout << std::boolalpha;  // Display 'true/false' instead of '1/0' for bool
 
-  std::cout << std::endl;
+  // Print user configuration
+  std::cout <<                                                                      std::endl;
+  std::cout << "---------------------------------------------" <<                   std::endl;
+  std::cout << "MKGEXPRO --- Create GEXPRO files for analysis" <<                   std::endl;
+  std::cout << "---------------------------------------------" <<                   std::endl;
+  std::cout                                                                      << std::endl;
+  std::cout << "Copyright (c) 2018 by Joe Romano and the Tatonetti Lab."         << std::endl;
+  std::cout <<                                                                      std::endl;
+  std::cout << "version " << Gexpro_VERSION_MAJOR << "." << Gexpro_VERSION_MINOR << std::endl;
+  std::cout <<                                                                      std::endl;
+  std::cout << "VERBOSE OUTPUT: " << (bool)(vm.count("verbose")) <<                 std::endl;
+  std::cout << "NORMALIZE TRANSCRIPT VALUES: " << (bool)(vm.count("normalize")) <<  std::endl;
+  std::cout <<                                                                      std::endl;
 
   // Validate
   if (vm.count("geo-accession") && vm.count("geo-file")) {
@@ -39,6 +55,12 @@ void validateOptions(po::options_description& all_opts, po::variables_map& vm) {
 
 
 int main (int argc, char* argv[]) {
+  // int i;
+  // for (i=0; i<100; i++) {
+  //   advance_cursor();
+  //   usleep(100000);
+  // }
+  // printf("\n");
 
   try {
     // Specify command-line options
@@ -96,7 +118,19 @@ int main (int argc, char* argv[]) {
     // Get input
     if (vm.count("geo-accession")) {
       // test data type
+      std::cout << "Downloading file..." << std::endl;
+
       Gexpro geosoft = parser.downloadGeoFile( vm["geo-accession"].as<std::string>() );
+      const Gexpro& gsr = geosoft;
+      const MultiGexpro& mp = MultiGexpro(gsr);
+      // std::future<Gexpro> fut = std::async(std::launch::async,
+      //                                      &GeoParser::downloadGeoFile,
+      //                                      parser,
+      //                                      vm["geo-accession"].as<std::string>() );
+      // std::chrono::milliseconds span (200);
+      // while (fut.wait_for(span) == std::future_status::timeout)
+      //   advance_cursor();
+      // Gexpro geosoft = fut.get();
 
       if (vm.count("normalize")) {
         geosoft.normalizeFromDataMatrix();

@@ -11,18 +11,23 @@ from keras.callbacks import TensorBoard
 data = np.loadtxt("../build/GSE8157.csv", delimiter=",")
 data = data.T
 
+hidden_dim = 1000
 encoding_dim = 500
 input_dim = data.shape[1]
 
 input_data = Input(shape=(input_dim,))
-encoded = Dense(encoding_dim, activation='relu')(input_data)
-decoded = Dense(input_dim, activation='sigmoid')(encoded)
+h1 = Dense(hidden_dim, activation='relu')(input_data)
+encoded = Dense(encoding_dim, activation='relu')(h1)
+h2 = Dense(hidden_dim, activation='relu')(encoded)
+decoded = Dense(input_dim, activation='sigmoid')(h2)
 autoencoder = Model(input_data, decoded)
 
-encoder = Model(input_data, encoded)
-encoded_input = Input(shape=(encoding_dim,))
-decoder_layer = autoencoder.layers[-1]
-decoder = Model(encoded_input, decoder_layer(encoded_input))
+# encoder = Model(input_data, encoded)
+# encoded_input = Input(shape=(encoding_dim,))
+# decoder_layer = autoencoder.layers[-1]
+# decoder = Model(encoded_input, decoder_layer(encoded_input))
+
+def transcriptwise_rmse()
 
 autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 
@@ -34,3 +39,9 @@ autoencoder.fit(data, data,
                 shuffle=True,
                 validation_data=(data,data),
                 callbacks=[tb])
+
+# get reconstructions
+data_pred = autoencoder.predict(data)
+
+# compute probe-wise RMSE
+rmse = np.sqrt(np.mean(np.square((data_pred - data)), axis=0))
