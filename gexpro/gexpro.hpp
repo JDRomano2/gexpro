@@ -74,7 +74,7 @@ class Gexpro {
 
   // data declarations
   // profile data
-  std::vector<std::string>* genesIdx;
+  std::vector<std::string> genesIdx;
   std::vector<std::string>* samplesIdx;
   // outer dim: genes. inner dim: samples.
   std::vector<std::vector<std::string>>* raw_data_matrix;
@@ -111,8 +111,8 @@ public:
 
   std::string getName() const { return profile_name; }
   int getNSamples() { return samplesIdx->size(); }
-  int getNGenes() { return genesIdx->size(); }
-  std::vector<std::string>* getFeatureNames() const { return genesIdx; }
+  int getNGenes() { return genesIdx.size(); }
+  std::vector<std::string> getFeatureNames() { return genesIdx; }
   std::vector<std::string>* getSampleNames() const { return samplesIdx; }
   std::vector<std::vector<std::string>>* getRDM() { return raw_data_matrix; }
 };

@@ -14,10 +14,10 @@
 #include "gexpro.hpp"
 
 class MultiGexpro {
-  std::vector<const Gexpro*> gps;
+  std::vector<Gexpro*> gps;
   std::vector<std::string> common_features;  // 'features' are transcripts, probes, etc.
 public:
-  MultiGexpro(const Gexpro& firstGexpro);
+  MultiGexpro(Gexpro& firstGexpro);
 
   const Gexpro* getGpByIndex(int gp_index);
   const Gexpro* getGpByName(std::string gp_name);
@@ -28,10 +28,11 @@ public:
   void findCommonFeatures();
 
   // statistical manipulations
-
+  
 
   // informational methods
-  size_t numGexpros() { return gps.size(); }
+  size_t numGexpros() const { return gps.size(); }
+  size_t numCommonFeatures() const { return common_features.size(); }
 };
 
 #endif

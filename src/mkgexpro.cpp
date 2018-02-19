@@ -121,8 +121,13 @@ int main (int argc, char* argv[]) {
       std::cout << "Downloading file..." << std::endl;
 
       Gexpro geosoft = parser.downloadGeoFile( vm["geo-accession"].as<std::string>() );
-      const Gexpro& gsr = geosoft;
-      const MultiGexpro& mp = MultiGexpro(gsr);
+      Gexpro& gsr = geosoft;
+      std::cout << "Double check number of features: " << gsr.getFeatureNames()[0] << std::endl;
+      MultiGexpro* mp = new MultiGexpro(gsr);
+      std::cout << "Initialized multigexpro" << std::endl;
+      mp->findCommonFeatures();
+      std::cout << "Number of features in all samples: ";
+      std::cout << mp->numCommonFeatures() << std::endl;
       // std::future<Gexpro> fut = std::async(std::launch::async,
       //                                      &GeoParser::downloadGeoFile,
       //                                      parser,

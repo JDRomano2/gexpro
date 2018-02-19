@@ -38,7 +38,7 @@ void Gexpro::alignGeneData() {
   }
 
   samplesIdx = &sidx;
-  genesIdx = &gidx;
+  genesIdx = gidx;
 
   this->setRawDataMatrix(&rdm);
 

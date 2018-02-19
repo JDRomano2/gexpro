@@ -1,9 +1,44 @@
 #include "multiGexpro.hpp"
 
-MultiGexpro::MultiGexpro(const Gexpro& firstGexpro) {
+// Debugging - see below
+#include <type_traits>
+#include <typeinfo>
+#include <cxxabi.h>
+#include <memory>
+#include <cstdlib>
+
+// // For debugging (see https://stackoverflow.com/a/20170989/1730417)
+// template <class T>
+// std::string
+// type_name()
+// {
+//   typedef typename std::remove_reference<T>::type TR;
+//   std::unique_ptr<char, void(*)(void*)> own
+//     (
+// #ifndef _MSC_VER
+//      abi::__cxa_demangle(typeid(TR).name(), nullptr,
+//                          nullptr, nullptr),
+// #else
+//      nullptr,
+// #endif
+//      std::free
+//      );
+//   std::string r = own != nullptr ? own.get() : typeid(TR).name();
+//   if (std::is_const<TR>::value)
+//     r += " const";
+//   if (std::is_volatile<TR>::value)
+//     r += " volatile";
+//   if (std::is_lvalue_reference<T>::value)
+//     r += "&";
+//   else if (std::is_rvalue_reference<T>::value)
+//     r += "&&";
+//   return r;
+// }
+
+MultiGexpro::MultiGexpro(Gexpro& firstGexpro) {
   // Unfortunately we can't make a vector of references; store instead as vector of pointers
   // (perhaps reimplement as boost::ptr_vector)
-  const Gexpro *gp = &firstGexpro;
+  Gexpro *gp = &firstGexpro;
   gps = { gp };
 }
 
@@ -61,10 +96,20 @@ void MultiGexpro::findCommonFeatures() {
 
   std::vector<std::string> merged_feature_vecs;
   std::vector<std::string>* fidx;
+  std::cout << "Initialized data structures in findCommonFeatures()" << std::endl;
   for (auto i: gps) {
-    fidx = i->getFeatureNames();
+    // std::cout << "New feature vector to process" << std::endl;
+    //fidx = i->getFeatureNames();
+    std::vector<std::string> temp = i->getFeatureNames();
+    fidx = &temp;
+    // std::cout << "decltype(fidx) is " << type_name<decltype(fidx)>() << '\n';
+    // std::cout << "decltype((*fidx)) is " << type_name<decltype((*fidx))>() << '\n';
+    // std::cout << "decltype((*fidx)[0]) is " << type_name<decltype((*fidx)[0])>() << '\n';
+    // std::cout << "First feature name: " << (*fidx)[0] << std::endl;;
     std::copy(fidx->begin(), fidx->end(), std::back_inserter(merged_feature_vecs));
   }
+
+  std::cout << "Built aggregate list of features; now merging..." << std::endl;
 
   std::string previous = "";
   for (auto j: merged_feature_vecs) {
@@ -75,4 +120,5 @@ void MultiGexpro::findCommonFeatures() {
   }
 
   common_features = cfs;
+  std::cout << "NUM COMMON FEATURES: " << cfs.size() << std::endl;
 }
