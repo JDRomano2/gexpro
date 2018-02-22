@@ -98,16 +98,14 @@ void MultiGexpro::findCommonFeatures() {
   std::vector<std::string>* fidx;
   std::cout << "Initialized data structures in findCommonFeatures()" << std::endl;
   for (auto i: gps) {
-    // std::cout << "New feature vector to process" << std::endl;
-    //fidx = i->getFeatureNames();
     std::vector<std::string> temp = i->getFeatureNames();
     fidx = &temp;
-    // std::cout << "decltype(fidx) is " << type_name<decltype(fidx)>() << '\n';
-    // std::cout << "decltype((*fidx)) is " << type_name<decltype((*fidx))>() << '\n';
-    // std::cout << "decltype((*fidx)[0]) is " << type_name<decltype((*fidx)[0])>() << '\n';
-    // std::cout << "First feature name: " << (*fidx)[0] << std::endl;;
     std::copy(fidx->begin(), fidx->end(), std::back_inserter(merged_feature_vecs));
   }
+
+  // Perform lexicographic sort
+  std::cout << "Sorting aggregate list of features..." << std::endl;
+  std::sort(merged_feature_vecs.begin(), merged_feature_vecs.end());
 
   std::cout << "Built aggregate list of features; now merging..." << std::endl;
 
@@ -121,4 +119,12 @@ void MultiGexpro::findCommonFeatures() {
 
   common_features = cfs;
   std::cout << "NUM COMMON FEATURES: " << cfs.size() << std::endl;
+}
+
+void MultiGexpro::normalizeAllGexpros() {
+  std::cout << "Normalizing all data..." << std::endl;
+  for (auto i: gps) {
+    i->normalizeFromDataMatrix();
+  }
+  std::cout << "...successfully normalized all datasets." << std::endl;
 }

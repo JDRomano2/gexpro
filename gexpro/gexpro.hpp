@@ -35,7 +35,7 @@ typedef enum ExpressionDataType {
   TYPE_MISC_OTHER,
 } ExpressionDataType;
 
-// The default unit for each gene's expression value
+// The default unit for each feature's expression value
 typedef enum ExprBaseUnit {
   UNIT_COUNT,
   UNIT_Z_SCORE
@@ -48,19 +48,19 @@ typedef enum PlatformClass {
 } PlatformClass;
 
 typedef struct ProfileDims {
-  int n_genes;
+  int n_features;
   int n_samples;
 } ProfileDims;
 
-typedef struct SampleGene {
+typedef struct SampleValue {
   std::vector<std::string> sample_ids;
   std::vector<std::string> values;
   //std::vector<char> abs_call;
   //std::vector<float> det_pval;
-} SampleGene;
+} SampleValue;
 
 
-template class std::map<std::string,SampleGene>;
+template class std::map<std::string,SampleValue>;
 
 
 class Gexpro {
@@ -74,13 +74,13 @@ class Gexpro {
 
   // data declarations
   // profile data
-  std::vector<std::string> genesIdx;
+  std::vector<std::string> featuresIdx;
   std::vector<std::string>* samplesIdx;
-  // outer dim: genes. inner dim: samples.
+  // outer dim: featuress. inner dim: samples.
   std::vector<std::vector<std::string>>* raw_data_matrix;
 
   // sample data
-  std::map<std::string,SampleGene> genes;
+  std::map<std::string,SampleValue> features;
 
   fmat data_matrix;
 
@@ -99,8 +99,8 @@ public:
   void setDataMatrix(fmat geo) { data_matrix = geo; }
 
   // Related to Samples
-  void addSampleValueToGene(std::string gene_id, std::string sample, std::string value);
-  void alignGeneData();
+  void addSampleValueToFeature(std::string feature_id, std::string sample, std::string value);
+  void alignFeatureData();
 
   void printDataHeader(int nrow=5, int ncol=5);
   void dumpMatrix(std::string fname_prefix);
@@ -111,8 +111,8 @@ public:
 
   std::string getName() const { return profile_name; }
   int getNSamples() { return samplesIdx->size(); }
-  int getNGenes() { return genesIdx.size(); }
-  std::vector<std::string> getFeatureNames() { return genesIdx; }
+  int getNFeaturess() { return featuresIdx.size(); }
+  std::vector<std::string> getFeatureNames() { return featuresIdx; }
   std::vector<std::string>* getSampleNames() const { return samplesIdx; }
   std::vector<std::vector<std::string>>* getRDM() { return raw_data_matrix; }
 };

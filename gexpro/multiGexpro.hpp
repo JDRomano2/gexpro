@@ -26,9 +26,11 @@ public:
 
   // data manipulations
   void findCommonFeatures();
+  void removeNonCommonFeatures();  // Must have run findCommonFeatures();
+  void imputeZeros();
 
   // statistical manipulations
-  
+  void normalizeAllGexpros();
 
   // informational methods
   size_t numGexpros() const { return gps.size(); }

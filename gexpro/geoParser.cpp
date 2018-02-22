@@ -24,7 +24,7 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
   std::string fname_no_path = file_name.substr(found+1);
   const std::string pro_name = fname_no_path.substr(0, fname_no_path.find(delim));
   
-    // Allocate a new gene expression profile
+    // Allocate a new expression profile
   Gexpro gexpr = Gexpro(pro_name);
 
   // open file
@@ -204,7 +204,7 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
     std::cout << e.what() << '\n';
   }
 
-  downloaded.alignGeneData();
+  downloaded.alignFeatureData();
 
   return downloaded;
 }
@@ -381,8 +381,8 @@ void GeoParser::flushSample(Gexpro& dest_gexpr) {
     copy(std::istream_iterator<std::string>(iss),
 	 std::istream_iterator<std::string>(),
 	 std::back_inserter(tokens));
-    // create gene if needed, otherwise append to it
-    dest_gexpr.addSampleValueToGene(tokens[0], current_sample_id, tokens[1]);
+    // create feature if needed, otherwise append to it
+    dest_gexpr.addSampleValueToFeature(tokens[0], current_sample_id, tokens[1]);
   }
 
   // Reset data buffer

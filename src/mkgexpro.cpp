@@ -38,6 +38,9 @@ void validateOptions(po::options_description& all_opts, po::variables_map& vm) {
   std::cout <<                                                                      std::endl;
   std::cout << "version " << Gexpro_VERSION_MAJOR << "." << Gexpro_VERSION_MINOR << std::endl;
   std::cout <<                                                                      std::endl;
+  std::cout << "===============================================================" << std::endl;
+  std::cout << "= CONFIGURATION OPTIONS                                       =" << std::endl;
+  std::cout << "===============================================================" << std::endl;
   std::cout << "VERBOSE OUTPUT: " << (bool)(vm.count("verbose")) <<                 std::endl;
   std::cout << "NORMALIZE TRANSCRIPT VALUES: " << (bool)(vm.count("normalize")) <<  std::endl;
   std::cout <<                                                                      std::endl;
@@ -121,9 +124,12 @@ int main (int argc, char* argv[]) {
       std::cout << "Downloading file..." << std::endl;
 
       Gexpro geosoft = parser.downloadGeoFile( vm["geo-accession"].as<std::string>() );
+      Gexpro geosoft2 = parser.downloadGeoFile( "GSE110312" );
       Gexpro& gsr = geosoft;
-      std::cout << "Double check number of features: " << gsr.getFeatureNames()[0] << std::endl;
+      Gexpro& gsr2 = geosoft2;
+      //std::cout << "Double check number of features: " << gsr.getFeatureNames()[0] << std::endl;
       MultiGexpro* mp = new MultiGexpro(gsr);
+      mp->add(gsr2);
       std::cout << "Initialized multigexpro" << std::endl;
       mp->findCommonFeatures();
       std::cout << "Number of features in all samples: ";
@@ -142,6 +148,7 @@ int main (int argc, char* argv[]) {
       }
       // write matrix to file
       geosoft.dumpMatrix( vm["geo-accession"].as<std::string>() );
+      geosoft2.dumpMatrix( "GSE110312" );
     }
 
 
