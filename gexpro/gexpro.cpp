@@ -5,7 +5,6 @@ Gexpro::Gexpro(std::string nameStr) : data_matrix(0, 0) {
 }
 
 void Gexpro::removeFeatureByName(std::string feat, bool fail_silently) {
-  std::cout << "Removing feature with name: " << feat << std::endl;
   // Find feature index
   auto it = find(featuresIdx.begin(), featuresIdx.end(), feat);
   if (it == featuresIdx.end()) {
@@ -30,9 +29,6 @@ void Gexpro::removeFeatureByIndex(int f_ind) {
   featuresIdx.erase(featuresIdx.begin() + (f_ind-1));
 
   // remove from data_matrix
-  std::cout << "  Removing index " << f_ind << "..." << std::endl;
-  std::cout << "  (size of matrix: (" << data_matrix.n_rows
-            << "x" << data_matrix.n_cols << "))" << std::endl;
   data_matrix.shed_row(f_ind);
 }
 

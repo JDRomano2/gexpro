@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string>
-#include <getopt.h>
 #include <future>
 
 #include <archive.h>
@@ -45,15 +44,20 @@ void validateOptions(po::options_description& all_opts, po::variables_map& vm) {
   std::cout << "NORMALIZE TRANSCRIPT VALUES: " << (bool)(vm.count("normalize")) <<  std::endl;
   std::cout <<                                                                      std::endl;
 
-  // Validate
-  if (vm.count("geo-accession") && vm.count("geo-file")) {
-    std::cout << "ERROR: " << std::endl;
-    std::cout << "Specify either GEO accession or GEO file, not both." << std::endl;
-  }
-  if (!(vm.count("geo-accession")) && !(vm.count("geo-file"))) {
-    std::cout << "ERROR: " << std::endl;
-    std::cout << "Must provide either a GEO accession or a local path to a GEO SOFT file." << std::endl;
-  }
+  std::cout << vm.count("verbose") << std::endl;
+  // std::vector<std::string> svec = vm["geo-accession"].as<std::vector<std::string>>;
+  // for (auto i: svec)
+  //   std::cout << i << std::endl;
+
+  // // Validate
+  // if (vm.count("geo-accession") && vm.count("geo-file")) {
+  //   std::cout << "ERROR: " << std::endl;
+  //   std::cout << "Specify either GEO accession or GEO file, not both." << std::endl;
+  // }
+  // if (!(vm.count("geo-accession")) && !(vm.count("geo-file"))) {
+  //   std::cout << "ERROR: " << std::endl;
+  //   std::cout << "Must provide either a GEO accession or a local path to a GEO SOFT file." << std::endl;
+  // }
 }
 
 
@@ -66,6 +70,8 @@ int main (int argc, char* argv[]) {
   // printf("\n");
 
   try {
+    std::vector<std::string> accessions;
+
     // Specify command-line options
     po::options_description general_opts("General options");
     general_opts.add_options()
@@ -76,7 +82,7 @@ int main (int argc, char* argv[]) {
       ;
     po::options_description io_opts("Input/output options");
     io_opts.add_options()
-      ("geo-accession,G", po::value<std::string>(), "Provide an accession string to retrieve from GEO")
+      ("geo-accession(s),G", po::value< std::vector<std::string> >(&accessions)->multitoken(), "Provide an accession string to retrieve from GEO")
       ("geo-file,g", po::value<std::string>(), "Load a GEO SOFT file from a local directory")
       ("output,o", po::value<std::string>(), "Set output directory for created file(s)")
       ;
@@ -119,12 +125,15 @@ int main (int argc, char* argv[]) {
     GeoParser parser;
 
     // Get input
-    if (vm.count("geo-accession")) {
-      // test data type
+    //if (vm.count("geo-accession")) {
+    if (accessions.size() > 0) {
+
       std::cout << "Downloading file..." << std::endl;
 
-      Gexpro geosoft = parser.downloadGeoFile( vm["geo-accession"].as<std::string>() );
-      Gexpro geosoft2 = parser.downloadGeoFile( "GSE110312" );
+      //Gexpro geosoft = parser.downloadGeoFile( vm["geo-accession"].as<std::string>() );
+      //Gexpro geosoft2 = parser.downloadGeoFile( "GSE110312" );
+      Gexpro geosoft = parser.downloadGeoFile(accessions[0]);
+      Gexpro geosoft2 = parser.downloadGeoFile(accessions[1]);
       Gexpro& gsr = geosoft;
       Gexpro& gsr2 = geosoft2;
       //std::cout << "Double check number of features: " << gsr.getFeatureNames()[0] << std::endl;
@@ -135,8 +144,6 @@ int main (int argc, char* argv[]) {
 
       mp->removeNonCommonFeatures();
 
-      std::cout << "Double check number of features: " << gsr.getFeatureNames().size() << std::endl;
-      std::cout << "Double check number of features: " << gsr2.getFeatureNames().size() << std::endl;
       // std::future<Gexpro> fut = std::async(std::launch::async,
       //                                      &GeoParser::downloadGeoFile,
       //                                      parser,
@@ -150,8 +157,8 @@ int main (int argc, char* argv[]) {
         geosoft.normalizeFromDataMatrix();
       }
       // write matrix to file
-      geosoft.dumpMatrix( vm["geo-accession"].as<std::string>() );
-      geosoft2.dumpMatrix( "GSE110312" );
+      geosoft.dumpMatrix( accessions[0] );
+      geosoft2.dumpMatrix( accessions[1] );
     }
 
 
