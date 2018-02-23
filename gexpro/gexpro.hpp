@@ -75,13 +75,15 @@ class Gexpro {
   // data declarations
   // profile data
   std::vector<std::string> featuresIdx;
-  std::vector<std::string>* samplesIdx;
+  std::vector<std::string> samplesIdx;
   // outer dim: featuress. inner dim: samples.
   std::vector<std::vector<std::string>>* raw_data_matrix;
 
   // sample data
   std::map<std::string,SampleValue> features;
 
+  // COLUMNS: SAMPLES
+  // ROWS:    FEATURES
   fmat data_matrix;
 
   Normalizer normalizer;
@@ -98,6 +100,10 @@ public:
   void setRawDataMatrix(std::vector<std::vector<std::string>>* rdm) { raw_data_matrix = rdm; }
   void setDataMatrix(fmat geo) { data_matrix = geo; }
 
+  // Other mutators
+  void removeFeatureByName(std::string feat, bool fail_silently = false);
+  void removeFeatureByIndex(int f_ind);
+
   // Related to Samples
   void addSampleValueToFeature(std::string feature_id, std::string sample, std::string value);
   void alignFeatureData();
@@ -110,10 +116,12 @@ public:
   // void normalizeFromDataDirectory(params...)
 
   std::string getName() const { return profile_name; }
-  int getNSamples() { return samplesIdx->size(); }
-  int getNFeaturess() { return featuresIdx.size(); }
+  int getNSamples() { return samplesIdx.size(); }
+  int getNFeatures() { return featuresIdx.size(); }
+  int getNDataCols() { return data_matrix.n_cols; }
+  int getNDataRows() { return data_matrix.n_rows; }
   std::vector<std::string> getFeatureNames() { return featuresIdx; }
-  std::vector<std::string>* getSampleNames() const { return samplesIdx; }
+  std::vector<std::string> getSampleNames() const { return samplesIdx; }
   std::vector<std::vector<std::string>>* getRDM() { return raw_data_matrix; }
 };
 

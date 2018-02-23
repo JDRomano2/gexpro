@@ -132,8 +132,11 @@ int main (int argc, char* argv[]) {
       mp->add(gsr2);
       std::cout << "Initialized multigexpro" << std::endl;
       mp->findCommonFeatures();
-      std::cout << "Number of features in all samples: ";
-      std::cout << mp->numCommonFeatures() << std::endl;
+
+      mp->removeNonCommonFeatures();
+
+      std::cout << "Double check number of features: " << gsr.getFeatureNames().size() << std::endl;
+      std::cout << "Double check number of features: " << gsr2.getFeatureNames().size() << std::endl;
       // std::future<Gexpro> fut = std::async(std::launch::async,
       //                                      &GeoParser::downloadGeoFile,
       //                                      parser,

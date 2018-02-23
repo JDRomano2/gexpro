@@ -4,6 +4,38 @@ Gexpro::Gexpro(std::string nameStr) : data_matrix(0, 0) {
   profile_name = nameStr;
 }
 
+void Gexpro::removeFeatureByName(std::string feat, bool fail_silently) {
+  std::cout << "Removing feature with name: " << feat << std::endl;
+  // Find feature index
+  auto it = find(featuresIdx.begin(), featuresIdx.end(), feat);
+  if (it == featuresIdx.end()) {
+    // This gexpro doesn't contain that feature!
+    if (fail_silently) {
+      return;
+    } else {
+      std::cout << "Error: Feature not found in Gexpro object" << std::endl;
+    }
+  } else {
+    ptrdiff_t pos = distance(featuresIdx.begin(), it);
+    // pos should contain index
+
+    // Remove feature using index
+
+    this->removeFeatureByIndex((int)pos);
+  }
+}
+
+void Gexpro::removeFeatureByIndex(int f_ind) {
+  // remove from featuresIdx
+  featuresIdx.erase(featuresIdx.begin() + (f_ind-1));
+
+  // remove from data_matrix
+  std::cout << "  Removing index " << f_ind << "..." << std::endl;
+  std::cout << "  (size of matrix: (" << data_matrix.n_rows
+            << "x" << data_matrix.n_cols << "))" << std::endl;
+  data_matrix.shed_row(f_ind);
+}
+
 void Gexpro::addSampleValueToFeature(std::string feature_id, std::string sample, std::string value) {
   if ( features.find(feature_id) == features.end() ) {
     features[feature_id] = { {sample}, {value} };
@@ -37,7 +69,7 @@ void Gexpro::alignFeatureData() {
     i++;
   }
 
-  samplesIdx = &sidx;
+  samplesIdx = sidx;
   featuresIdx = gidx;
 
   this->setRawDataMatrix(&rdm);

@@ -9,13 +9,15 @@
  */
 
 #include <vector>
+#include <set>
 #include <algorithm>
 
 #include "gexpro.hpp"
 
 class MultiGexpro {
   std::vector<Gexpro*> gps;
-  std::vector<std::string> common_features;  // 'features' are transcripts, probes, etc.
+  std::vector<std::string> common_features;   // 'features' are transcripts, probes, etc.
+  std::vector<std::string> uncommon_features; // features that aren't in every gexpro
 public:
   MultiGexpro(Gexpro& firstGexpro);
 
@@ -26,8 +28,8 @@ public:
 
   // data manipulations
   void findCommonFeatures();
-  void removeNonCommonFeatures();  // Must have run findCommonFeatures();
-  void imputeZeros();
+  void removeNonCommonFeatures();  // Must have run findCommonFeatures()
+  void imputeZeros();  // Impute non-common features as zeros
 
   // statistical manipulations
   void normalizeAllGexpros();

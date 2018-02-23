@@ -83,14 +83,7 @@ void MultiGexpro::remove(Gexpro& gp) {
  */
 void MultiGexpro::findCommonFeatures() {
   // No suitable STL merge algorithm for variable number of vectors
-
-  // std::vector< std::vector<std::string> > sorted_feature_vecs(gps.size());
-  // std::vector<std::string> temp_feature_vec;
-  // for (auto i: gps) {
-  //   temp_feature_vec = *i;  // dereferencing makes a copy
-  //   std::sort(temp_feature_vec.begin(), temp_feature_vec.end());
-  //   sorted_feature_vecs.push_back(temp_feature_vec);
-  // }
+  // THIS CAN BE MADE MORE EFFICIENT!
 
   std::vector<std::string> cfs;
 
@@ -117,8 +110,60 @@ void MultiGexpro::findCommonFeatures() {
     previous = j;
   }
 
-  common_features = cfs;
-  std::cout << "NUM COMMON FEATURES: " << cfs.size() << std::endl;
+  std::map<std::string, int> feat_map;
+  for (auto const& x : cfs) { feat_map[x] = 0; }
+
+  // Iterate over all features. Increment feat_map for every value
+  int num_obs_gexpros = 0;
+  for (auto k: gps) {
+    num_obs_gexpros++;
+    for (auto l: k->getFeatureNames()) {
+      (feat_map[l])++;
+    }
+  }
+
+  std::vector<std::string> in_all;
+  std::vector<std::string> not_in_all;
+
+  std::map<std::string, int>::iterator m_it = feat_map.begin();
+  while (m_it != feat_map.end()) {
+    if (m_it->second == num_obs_gexpros) {
+      in_all.push_back(m_it->first);
+    } else {
+      not_in_all.push_back(m_it->first);
+    }
+    m_it++;
+  }
+
+  common_features = in_all;
+  uncommon_features = not_in_all;
+
+  std::cout << "NUM COMMON FEATURES:     " << common_features.size() << std::endl;
+  std::cout << "NUM 'UNCOMMON' FEATURES: " << uncommon_features.size() << std::endl;
+  std::cout << "Features not in all gexpros: " << std::endl;
+  for (auto k = uncommon_features.begin(); k != uncommon_features.end(); ++k)
+    std::cout << "    " << *k << std::endl;
+}
+
+void MultiGexpro::removeNonCommonFeatures() {
+  std::cout << "==============================================" << std::endl;
+  std::cout << "REMOVING NON-COMMON FEATURES" << std::endl;
+  std::cout << std::endl;
+  std::cout << "Number of common features: " << common_features.size() << std::endl;
+  std::cout << "  Number of features in gp1: " << gps[0]->getNFeatures() << std::endl;
+  std::cout << "  Number of samples in gp1: " << gps[0]->getNSamples() << std::endl;
+  std::cout << std::endl;
+  std::cout << "  Number of features in gp2: " << gps[1]->getNFeatures() << std::endl;
+  std::cout << "  Number of samples in gp2: " << gps[1]->getNSamples() << std::endl;
+  std::cout << std::endl;
+
+  for (auto i: uncommon_features)
+    for (auto j: gps)
+      j->removeFeatureByName(i, true);
+}
+
+void MultiGexpro::imputeZeros() {
+  
 }
 
 void MultiGexpro::normalizeAllGexpros() {
