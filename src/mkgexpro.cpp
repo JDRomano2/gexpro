@@ -132,13 +132,21 @@ int main (int argc, char* argv[]) {
 
       //Gexpro geosoft = parser.downloadGeoFile( vm["geo-accession"].as<std::string>() );
       //Gexpro geosoft2 = parser.downloadGeoFile( "GSE110312" );
-      Gexpro geosoft = parser.downloadGeoFile(accessions[0]);
-      Gexpro geosoft2 = parser.downloadGeoFile(accessions[1]);
-      Gexpro& gsr = geosoft;
-      Gexpro& gsr2 = geosoft2;
-      //std::cout << "Double check number of features: " << gsr.getFeatureNames()[0] << std::endl;
-      MultiGexpro* mp = new MultiGexpro(gsr);
-      mp->add(gsr2);
+
+      MultiGexpro* mp = new MultiGexpro();
+      for (auto& g : accessions) {
+        Gexpro geosoft = parser.downloadGeoFile(g);
+        Gexpro& gsr = geosoft;
+        mp->add(gsr);
+      }
+
+      // Gexpro geosoft = parser.downloadGeoFile(accessions[0]);
+      // Gexpro geosoft2 = parser.downloadGeoFile(accessions[1]);
+      // Gexpro& gsr = geosoft;
+      // Gexpro& gsr2 = geosoft2;
+      // //std::cout << "Double check number of features: " << gsr.getFeatureNames()[0] << std::endl;
+      // MultiGexpro* mp = new MultiGexpro(gsr);
+      // mp->add(gsr2);
       std::cout << "Initialized multigexpro" << std::endl;
       mp->findCommonFeatures();
 
@@ -153,12 +161,12 @@ int main (int argc, char* argv[]) {
       //   advance_cursor();
       // Gexpro geosoft = fut.get();
 
-      if (vm.count("normalize")) {
-        geosoft.normalizeFromDataMatrix();
-      }
+      // if (vm.count("normalize")) {
+      //   geosoft.normalizeFromDataMatrix();
+      // }
       // write matrix to file
-      geosoft.dumpMatrix( accessions[0] );
-      geosoft2.dumpMatrix( accessions[1] );
+      //geosoft.dumpMatrix( accessions[0] );
+      //geosoft2.dumpMatrix( accessions[1] );
     }
 
 

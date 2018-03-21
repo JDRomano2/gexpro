@@ -19,6 +19,7 @@ class MultiGexpro {
   std::vector<std::string> common_features;   // 'features' are transcripts, probes, etc.
   std::vector<std::string> uncommon_features; // features that aren't in every gexpro
 public:
+  MultiGexpro() = default;
   MultiGexpro(Gexpro& firstGexpro);
 
   const Gexpro* getGpByIndex(int gp_index);

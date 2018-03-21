@@ -82,6 +82,8 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
 Gexpro GeoParser::downloadGeoFile(const std::string id) {
   Gexpro downloaded;
 
+  std::cout << "ID: " << id << std::endl;
+
   // recognize type of file
   std::string first3 = id.substr(0,3);
   std::string last3 = id.substr(id.length()-3,3);
@@ -114,6 +116,8 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
     std::cout << "Error: Unable to detect sample type." << std::endl;
     abort();
   }
+
+  std::cout << "File URL: " << url << std::endl;
 
   // DOWNLOAD THE FILE
   // combination of two code samples:
