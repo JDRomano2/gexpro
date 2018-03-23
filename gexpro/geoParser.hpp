@@ -55,9 +55,6 @@ public:
   Gexpro parseFile(boost::iostreams::filtering_istream gzstream, std::string proname);
   Gexpro downloadGeoFile(const std::string id);
 
-  // Utility functions
-  ExpressionDataType detectDataType(std::string fnameOrURL) { return TYPE_GEO_SERIES; }  // need to implement
-
   // Parse components of a SOFT file
   void parseEntityIndicatorLine(Gexpro& gexpr, const std::string line);
   void parseEntityAttributeLine(Gexpro& gexpr, const std::string line);

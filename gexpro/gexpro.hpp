@@ -89,9 +89,9 @@ class Gexpro {
   Normalizer normalizer;
   
 public:
-  Gexpro(std::string nameStr);
   Gexpro() = default;
-
+  Gexpro(std::string nameStr);
+  
   // Setters
   void setPlatformNameStr(const std::string str) { platformNameStr = str; }
   void setSampleIdStr(const std::string str) { sampleIdStr = str; }

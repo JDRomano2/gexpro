@@ -17,13 +17,13 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
   // Given a file_name, fill the current Gexpro object with that file's contents
 
   //std::cout << "Trying to open file: " << file_name << std::endl;;
-  
+
   // Default profile name: the file name without the extension
   const std::string delim = ".";
   std::size_t found = file_name.find_last_of("/\\");
   std::string fname_no_path = file_name.substr(found+1);
   const std::string pro_name = fname_no_path.substr(0, fname_no_path.find(delim));
-  
+
     // Allocate a new expression profile
   Gexpro gexpr = Gexpro(pro_name);
 
@@ -80,7 +80,8 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
 }
 
 Gexpro GeoParser::downloadGeoFile(const std::string id) {
-  Gexpro downloaded;
+  Gexpro* dnGexpro = new Gexpro(id);
+  Gexpro downloaded = *dnGexpro;
 
   std::cout << "ID: " << id << std::endl;
 

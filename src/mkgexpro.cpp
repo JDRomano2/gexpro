@@ -130,27 +130,24 @@ int main (int argc, char* argv[]) {
 
       std::cout << "Downloading file..." << std::endl;
 
-      //Gexpro geosoft = parser.downloadGeoFile( vm["geo-accession"].as<std::string>() );
-      //Gexpro geosoft2 = parser.downloadGeoFile( "GSE110312" );
-
       MultiGexpro* mp = new MultiGexpro();
+      std::vector<Gexpro> geosoft_persistance_vec = {};
+
       for (auto& g : accessions) {
         Gexpro geosoft = parser.downloadGeoFile(g);
-        Gexpro& gsr = geosoft;
-        mp->add(gsr);
+        geosoft_persistance_vec.emplace_back(geosoft);
+        mp->add(geosoft);
       }
-
       // Gexpro geosoft = parser.downloadGeoFile(accessions[0]);
       // Gexpro geosoft2 = parser.downloadGeoFile(accessions[1]);
-      // Gexpro& gsr = geosoft;
-      // Gexpro& gsr2 = geosoft2;
-      // //std::cout << "Double check number of features: " << gsr.getFeatureNames()[0] << std::endl;
-      // MultiGexpro* mp = new MultiGexpro(gsr);
-      // mp->add(gsr2);
+      // mp->add(geosoft);
+      // mp->add(geosoft2);
+
       std::cout << "Initialized multigexpro" << std::endl;
       mp->findCommonFeatures();
-
+      std::cout << "Found common features" << std::endl;
       mp->removeNonCommonFeatures();
+      std::cout << "Removed everything else" << std::endl;
 
       // std::future<Gexpro> fut = std::async(std::launch::async,
       //                                      &GeoParser::downloadGeoFile,
@@ -164,9 +161,23 @@ int main (int argc, char* argv[]) {
       // if (vm.count("normalize")) {
       //   geosoft.normalizeFromDataMatrix();
       // }
+      //mp->normalizeAllGexpros();
+
       // write matrix to file
       //geosoft.dumpMatrix( accessions[0] );
       //geosoft2.dumpMatrix( accessions[1] );
+
+      mp->dumpAllMatrices();
+
+      // const Gexpro* gppointer = mp->getGpByIndex(0);
+      // Gexpro gppointer_deref = *gppointer;
+      // std::string name = gppointer_deref.getName();
+      // gppointer_deref.dumpMatrix(name);
+
+      std::cout << geosoft_persistance_vec.size() << std::endl;
+      for (auto& i : geosoft_persistance_vec) {
+        std::cout << i.getName() << std::endl;
+      }
     }
 
 

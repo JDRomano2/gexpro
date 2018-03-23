@@ -11,21 +11,23 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <functional>
 
 #include "gexpro.hpp"
 
 class MultiGexpro {
-  std::vector<Gexpro*> gps;
+  std::vector<Gexpro> gps;
   std::vector<std::string> common_features;   // 'features' are transcripts, probes, etc.
   std::vector<std::string> uncommon_features; // features that aren't in every gexpro
 public:
-  MultiGexpro() = default;
+  MultiGexpro() : gps() {};
   MultiGexpro(Gexpro& firstGexpro);
 
   const Gexpro* getGpByIndex(int gp_index);
   const Gexpro* getGpByName(std::string gp_name);
   void add(Gexpro& gp);
-  void remove(Gexpro& gp);
+  //void remove(Gexpro& gp);
+  void dumpAllMatrices();
 
   // data manipulations
   void findCommonFeatures();

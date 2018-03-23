@@ -47,6 +47,7 @@ void Normalizer::initializeWithKnownDimensions(unsigned int ng) {
 
   res = {
     fvec(ng,1),
+    fvec(ng,1),
     fvec(ng,1)
   };
 }

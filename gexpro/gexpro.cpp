@@ -93,11 +93,12 @@ void Gexpro::dumpMatrix(std::string fname_prefix) {
   std::string extension = ".csv";
   std::string fname_out = fname_prefix + extension;
 
-  if (FLAG_VERBOSE) {
+  if (true) {
     std::cout << std::endl;
     std::cout << "NUMBER OF ROWS: " << data_matrix.n_rows << std::endl;
     std::cout << "NUMBER OF COLUMNS: " << data_matrix.n_cols << std::endl;
     std::cout << "Saving output to: " << fname_out << std::endl;
+    std::cout << "Total size of data matrix: " << size(data_matrix) << std::endl;
   }
 
   data_matrix.save(fname_out, csv_ascii);

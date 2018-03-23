@@ -10,12 +10,12 @@
 MultiGexpro::MultiGexpro(Gexpro& firstGexpro) {
   // Unfortunately we can't make a vector of references; store instead as vector of pointers
   // (perhaps reimplement as boost::ptr_vector)
-  Gexpro *gp = &firstGexpro;
+  Gexpro& gp = firstGexpro;
   gps = { gp };
 }
 
 const Gexpro* MultiGexpro::getGpByIndex(int gp_index) {
-  const Gexpro* gp_ref = (gps[gp_index]);
+  const Gexpro* gp_ref = &(gps[gp_index]);
   return gp_ref;
 }
 
@@ -23,9 +23,9 @@ const Gexpro* MultiGexpro::getGpByName(std::string gp_name) {
   const Gexpro* gp_ptr;
   bool found_gp = false;
   for(auto const gp: gps) {
-    if ( gp->getName().compare(gp_name) == 0) {
+    if ( gp.getName().compare(gp_name) == 0) {
       if (found_gp == false) {
-        gp_ptr = gp;
+        gp_ptr = &gp;
         found_gp = true;
       } else {
         throw std::out_of_range( "Error: More than one GEXPRO with same name!" );
@@ -40,11 +40,21 @@ const Gexpro* MultiGexpro::getGpByName(std::string gp_name) {
 
 void MultiGexpro::add(Gexpro& gp) {
   // Add new pointer to Gexpro instance to gps
-  gps.push_back(&gp);
+  gps.push_back(gp);
 }
 
-void MultiGexpro::remove(Gexpro& gp) {
-  gps.erase(std::remove(gps.begin(),gps.end(), &gp), gps.end());
+// void MultiGexpro::remove(Gexpro& gp) {
+//   gps.erase(std::remove(gps.begin(),gps.end(), &gp), gps.end());
+// }
+
+void MultiGexpro::dumpAllMatrices() {
+  std::cout << "Beginning dump to individual files" << std::endl;
+  std::cout << "Number of GEXPROs: " << gps.size() << std::endl;
+  for(auto& i : gps) {
+    std::string name = i.getName();
+    std::cout << "Dumping: " << name << std::endl;
+    i.dumpMatrix(name);
+  }
 }
 
 /*!
@@ -62,7 +72,7 @@ void MultiGexpro::findCommonFeatures() {
   std::vector<std::string> merged_feature_vecs;
   std::vector<std::string>* fidx;
   for (auto i: gps) {
-    std::vector<std::string> temp = i->getFeatureNames();
+    std::vector<std::string> temp = i.getFeatureNames();
     fidx = &temp;
     std::copy(fidx->begin(), fidx->end(), std::back_inserter(merged_feature_vecs));
   }
@@ -85,7 +95,7 @@ void MultiGexpro::findCommonFeatures() {
   int num_obs_gexpros = 0;
   for (auto k: gps) {
     num_obs_gexpros++;
-    for (auto l: k->getFeatureNames())
+    for (auto l: k.getFeatureNames())
       (feat_map[l])++;
   }
 
@@ -110,7 +120,7 @@ void MultiGexpro::removeNonCommonFeatures() {
   // May be able to make this more efficient
   for (auto i: uncommon_features)
     for (auto j: gps)
-      j->removeFeatureByName(i, true);
+      j.removeFeatureByName(i, true);
 }
 
 void MultiGexpro::imputeZeros() {
@@ -120,6 +130,6 @@ void MultiGexpro::imputeZeros() {
 void MultiGexpro::normalizeAllGexpros() {
   std::cout << "Normalizing all data..." << std::endl;
   for (auto i: gps)
-    i->normalizeFromDataMatrix();
+    i.normalizeFromDataMatrix();
   std::cout << "...successfully normalized all datasets." << std::endl;
 }
