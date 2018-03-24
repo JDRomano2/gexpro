@@ -121,27 +121,19 @@ int main (int argc, char* argv[]) {
 
     // Handle program logic
 
-    // Instantiate objects
     GeoParser parser;
 
     // Get input
-    //if (vm.count("geo-accession")) {
     if (accessions.size() > 0) {
 
       std::cout << "Downloading file..." << std::endl;
 
       MultiGexpro* mp = new MultiGexpro();
-      std::vector<Gexpro> geosoft_persistance_vec = {};
 
       for (auto& g : accessions) {
         Gexpro geosoft = parser.downloadGeoFile(g);
-        geosoft_persistance_vec.emplace_back(geosoft);
         mp->add(geosoft);
       }
-      // Gexpro geosoft = parser.downloadGeoFile(accessions[0]);
-      // Gexpro geosoft2 = parser.downloadGeoFile(accessions[1]);
-      // mp->add(geosoft);
-      // mp->add(geosoft2);
 
       std::cout << "Initialized multigexpro" << std::endl;
       mp->findCommonFeatures();
@@ -158,26 +150,11 @@ int main (int argc, char* argv[]) {
       //   advance_cursor();
       // Gexpro geosoft = fut.get();
 
-      // if (vm.count("normalize")) {
-      //   geosoft.normalizeFromDataMatrix();
-      // }
-      //mp->normalizeAllGexpros();
-
-      // write matrix to file
-      //geosoft.dumpMatrix( accessions[0] );
-      //geosoft2.dumpMatrix( accessions[1] );
+      if (vm.count("normalize")) {
+        mp->normalizeAllGexpros();
+      }
 
       mp->dumpAllMatrices();
-
-      // const Gexpro* gppointer = mp->getGpByIndex(0);
-      // Gexpro gppointer_deref = *gppointer;
-      // std::string name = gppointer_deref.getName();
-      // gppointer_deref.dumpMatrix(name);
-
-      std::cout << geosoft_persistance_vec.size() << std::endl;
-      for (auto& i : geosoft_persistance_vec) {
-        std::cout << i.getName() << std::endl;
-      }
     }
 
 

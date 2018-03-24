@@ -41,6 +41,46 @@ make
 - zlib
 - libcurl
 
+## Development
+
+- Core functionality
+  - Data parsers
+    - [ ] GEO data
+      - [x] Download and parse Series data given accessions
+      - [ ] Download and parse curated Datasets
+      - [ ] Download Platform data files to retrieve all records of a given platform at once
+      - [ ] Add support for processing supplemental data files
+    - [ ] Connectivity Map data
+    - [ ] Expression Atlas
+  - Data serializers
+    - [x] Write data to CSV
+    - [ ] Write data to Protobuf
+    - [ ] Write data to HDF5
+    - [ ] Write data to Python pickle
+  - Data normalization
+    - [x] Batch normalization/standardization (e.g., normalize by Series/Dataset)
+    - [ ] Global normalization/standardization 
+    - [ ] Normalize by ranks
+  - Metadata support
+    - [ ] Recognize case/control status of individual samples (this will be a challenge)
+- Tools
+  - [ ] `mkgexpro`---Command-line utility to generate `GEXPRO` objects
+  - [ ] `gpsh`---REPL-based application for interactive manipulation of `GEXPRO` objects
+  - [ ] `gpsh`---Summarize `GEXPRO` objects
+- Plugins
+  - Deep learning
+    - [x] Simple autoencoder model
+    - [ ] Denoising autoencoder model
+    - [ ] Stacked denoising autoencoder model
+    - [ ] Variational autoencoder model
+  - [ ] Notebooks for replicating well-known studies
+- API
+  - [ ] Python bindings
+  - [ ] R bindings
+  - [ ] Build GitHub wiki with API documentation
+- Miscellaneous
+  - [ ] Automated documentation generation with Doxygen
+
 ## Tests
 
 Stay tuned...
