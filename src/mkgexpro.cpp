@@ -4,8 +4,6 @@
 #include <string>
 #include <future>
 
-#include <archive.h>
-
 #include "gexpro.hpp"
 #include "multiGexpro.hpp"
 #include "geoParser.hpp"

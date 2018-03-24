@@ -43,6 +43,8 @@ make
 
 ## Development
 
+This list isn't necessarily complete! It mainly serves as a place to organize top-priority features to be added to `GEXPRO`.
+
 - Core functionality
   - Data parsers
     - [ ] GEO data
