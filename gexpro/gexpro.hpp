@@ -31,6 +31,7 @@ typedef enum ExpressionDataType {
   TYPE_GEO_DATASET,
   TYPE_GEO_SAMPLE,
   TYPE_GEO_SERIES,
+  TYPE_GEO_PLATFORM,
   TYPE_GEO_OTHER,
   TYPE_MISC_OTHER,
 } ExpressionDataType;

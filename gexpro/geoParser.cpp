@@ -24,7 +24,7 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
   std::string fname_no_path = file_name.substr(found+1);
   const std::string pro_name = fname_no_path.substr(0, fname_no_path.find(delim));
 
-    // Allocate a new expression profile
+  // Allocate a new expression profile
   Gexpro gexpr = Gexpro(pro_name);
 
   // open file
@@ -46,11 +46,11 @@ Gexpro GeoParser::parseFile(const std::string file_name) {
     // ------------------READING DATA---------------------------
     if (reading_dataset_table == true) {
       if (line[0] == '!') {
-	reading_dataset_table = false;
-	this->flushDataset(gexpr);
-	if (FLAG_VERBOSE)
-	  std::cout << "Exiting data table read mode..." << std::endl;
-	continue;
+        reading_dataset_table = false;
+        this->flushDataset(gexpr);
+        if (FLAG_VERBOSE)
+          std::cout << "Exiting data table read mode..." << std::endl;
+        continue;
       }
 
       // Read a line of data
@@ -98,6 +98,8 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
     edt = TYPE_GEO_SERIES;
   else if ( first3.compare("GDS") == 0 )
     edt = TYPE_GEO_DATASET;
+  else if ( first3.compare("GPL") == 0 )
+    edt = TYPE_GEO_PLATFORM;
   else if ( first3.compare("GSM") == 0 )
     edt = TYPE_GEO_SAMPLE;
   else
@@ -108,6 +110,9 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
     url = std::string(GEO_BASE_URL)+"series/GSE"+between+"nnn/"+id+"/soft/"+id+"_family.soft.gz";
     break;
   case TYPE_GEO_DATASET:
+    break;
+  case TYPE_GEO_PLATFORM:
+    url = std::string(GEO_BASE_URL)+"platforms/GPL"+between+"nnn/"+id+"/soft/"+id+"_family.soft.gz";
     break;
   case TYPE_GEO_SAMPLE:
     break;
@@ -152,59 +157,56 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
     in.push(file);
     std::string str;
     std::cout << "  ...completed" << std::endl;
-    //downloaded = parseFile(in, id);
 
     // Iterate over file, parsing line by line
     std::string line;
     for (line; std::getline(in, line); ) {
-      // get first character
 
       // ------------------READING SAMPLE-----------------------------
       if (reading_sample_table == true) {
-	if (line[0] == '!') {
-	  reading_sample_table = false;
-	  this->flushSample(downloaded);
-	  if (FLAG_VERBOSE)
-	    std::cout << "Finished reading sample data, continuing..." << std::endl;
-	  continue;
-	}
+        if (line[0] == '!') {
+          reading_sample_table = false;
+          this->flushSample(downloaded);
+          if (FLAG_VERBOSE)
+            std::cout << "Finished reading sample data, continuing..." << std::endl;
+          continue;
+        }
 
-	data_buffer.push_back(line);
+        data_buffer.push_back(line);
       }
 
       // ------------------READING DATABASE---------------------------
       if (reading_dataset_table == true) {
-	if (line[0] == '!') {
-	  reading_dataset_table = false;
-	  this->flushDataset(downloaded);
-	  if (FLAG_VERBOSE)
-	    std::cout << "Exiting data table read mode..." << std::endl;
-	  continue;
-	}
+        if (line[0] == '!') {
+          reading_dataset_table = false;
+          this->flushDataset(downloaded);
+          if (FLAG_VERBOSE)
+            std::cout << "Exiting data table read mode..." << std::endl;
+          continue;
+        }
 
-	// Read a line of data
-	data_buffer.push_back(line);
+        // Read a line of data
+        data_buffer.push_back(line);
       }
 
       // ------------------READING METADATA-----------------------
       if (line[0] == '^') {
-	// BEGIN ENTITY BLOCK
-	this->parseEntityIndicatorLine(downloaded, line);
+        // BEGIN ENTITY BLOCK
+        this->parseEntityIndicatorLine(downloaded, line);
       } else if (line[0] == '!') {
-	// ENTITY ATTRIBUTE
-	this->parseEntityAttributeLine(downloaded, line);
+        // ENTITY ATTRIBUTE
+        this->parseEntityAttributeLine(downloaded, line);
       }
       else if (line[0] == '#') {
-	// DATA TABLE HEADER DESCRIPTION
-	this->parseDataTableHeaderLine(downloaded, line);
+        // DATA TABLE HEADER DESCRIPTION
+        this->parseDataTableHeaderLine(downloaded, line);
       } else {
-	// DATA TABLE CONTENT
-	continue;
+        // DATA TABLE CONTENT
+        continue;
       }
     }
     //current_soft_file.close();
     ifl = FILE_NOT_OPEN;
-    
   } catch(const boost::iostreams::gzip_error& e) {
     std::cout << e.what() << '\n';
   }
@@ -214,6 +216,62 @@ Gexpro GeoParser::downloadGeoFile(const std::string id) {
   return downloaded;
 }
 
+/*
+ * Given a MultiGexpro object and a platform accession, obtain all series
+ * in GEO that use that platform and store them in the MultiGexpro.
+ */
+void GeoParser::fetchSeriesByPlatform(const std::string id) {
+
+  std::cout << "Loading accessions from Platform file..." << std::endl;
+
+  std::string first3 = id.substr(0,3);
+  std::string last3 = id.substr(id.length()-3,3);
+  std::string between = id.substr(3,id.length()-6);
+
+  //std::string url = std::string(GEO_BASE_URL)+"platforms/GPL"+between+"nnn/"+id+"/soft/"+id+"_family.soft.gz";
+  std::string fname = "GPL570.txt";
+
+  std::string identifier;
+  std::string eqsign;
+  std::string remainder;
+
+  // Load file from local directory
+  std::ifstream file(fname, std::ios_base::in | std::ios_base::binary);
+  std::string line;
+
+  unsigned int microseconds = 500;
+
+  for(line; std::getline(file, line); ) {
+    if (line[0] == '!') {
+      std::istringstream iss(line);
+      // discard first two tokens
+      iss >> identifier;
+      if (identifier.compare("!Platform_series_id") != 0) {
+        identifier.clear();
+        continue;  // we only want series' accessions
+      }
+
+      //std::cout << identifier << std::endl;
+      //usleep(1000);
+
+      iss >> eqsign;
+      iss >> remainder;
+
+      // Double check that we have found a series accession
+      assert(remainder.substr(0,3).compare("GSE") == 0);
+
+      accession_queue.emplace(remainder);
+
+      // Reset strings to prepare for next loop
+      identifier.clear();
+      eqsign.clear();
+      remainder.clear();
+    }
+  }
+
+  std::cout << "Number of Series accessions loaded from " << fname << ": " << accession_queue.size() << std::endl;
+}
+
 void GeoParser::parseEntityIndicatorLine(Gexpro& gexpr, const std::string line) {
   // if (FLAG_VERBOSE) {
   //   std::cout << "NEW BLOCK: ";
@@ -221,7 +279,7 @@ void GeoParser::parseEntityIndicatorLine(Gexpro& gexpr, const std::string line) 
   // }
   std::cout << "NEW BLOCK: ";
   std::cout << line << std::endl;
-  
+
   std::istringstream iss(line);
   std::string identifier;
   std::string eqsign;
@@ -229,7 +287,7 @@ void GeoParser::parseEntityIndicatorLine(Gexpro& gexpr, const std::string line) 
   iss >> identifier;
   iss >> eqsign;
   iss >> remainder;
-  
+
   if (identifier.compare("^PLATFORM") == 0) {
     current_attribute_block = AttributeBlock::PLATFORM;
     gexpr.setPlatformNameStr(remainder);
@@ -251,7 +309,7 @@ void GeoParser::parseEntityIndicatorLine(Gexpro& gexpr, const std::string line) 
   } else if (identifier.compare("^Annotation") == 0) {
     current_attribute_block = AttributeBlock::ANNOTATION;
     // TODO
-  } 
+  }
 }
 
 void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) {
@@ -266,9 +324,9 @@ void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) 
 
   // branch based on current attribute block
   if (current_attribute_block == AttributeBlock::PLATFORM) {
-    
+
   } else if (current_attribute_block == AttributeBlock::SAMPLE) {
-    
+
     if (FLAG_VERBOSE)
       std::cout << "  SAMPLE ATTRIBUTE: " << line << std::endl;
     if (line == "!sample_table_begin") {
@@ -277,9 +335,9 @@ void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) 
     } else if (line == "!sample_table_end") {
       // Flush data
     }
-    
+
   } else if (current_attribute_block == AttributeBlock::SERIES) {
-    
+
   } else if (current_attribute_block == AttributeBlock::DATABASE) {
     // For now, skip this block - it just talks about GEO
   } else if (current_attribute_block == AttributeBlock::DATASET) {
@@ -290,7 +348,7 @@ void GeoParser::parseEntityAttributeLine(Gexpro& gexpr, const std::string line) 
       reading_dataset_table = true;
       return;
     }
-    
+
   } else if (current_attribute_block == AttributeBlock::SUBSET) {
 
   } else if (current_attribute_block == AttributeBlock::ANNOTATION) {
@@ -320,7 +378,7 @@ void GeoParser::flushDataset(Gexpro& dest_gexpr) {
   // find dimensions of data in buffer
   int nrows = data_buffer.size() - 1; // first line is just the header
   std::string field_delim = "\t";
-  
+
   std::vector<std::string> tok_header;
   std::string header_line = data_buffer[0];
 
@@ -379,13 +437,13 @@ void GeoParser::flushSample(Gexpro& dest_gexpr) {
   for (std::vector<std::string>::iterator it = data_buffer.begin()+1; it != data_buffer.end(); ++it) {
     // get the first (id) and second (value) tokens
     std::string current_sample_id = "TEST";
-    
+
     std::string current_row = *it;
     std::istringstream iss(current_row);
     std::vector<std::string> tokens;
     copy(std::istream_iterator<std::string>(iss),
-	 std::istream_iterator<std::string>(),
-	 std::back_inserter(tokens));
+         std::istream_iterator<std::string>(),
+         std::back_inserter(tokens));
     // create feature if needed, otherwise append to it
     dest_gexpr.addSampleValueToFeature(tokens[0], current_sample_id, tokens[1]);
   }

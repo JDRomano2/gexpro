@@ -23,13 +23,11 @@ void advance_cursor() {
 }
 
 void validateOptions(po::options_description& all_opts, po::variables_map& vm) {
-  //std::cout << std::boolalpha;  // Display 'true/false' instead of '1/0' for bool
-
   // Print user configuration
   std::cout <<                                                                      std::endl;
-  std::cout << "---------------------------------------------" <<                   std::endl;
-  std::cout << "MKGEXPRO --- Create GEXPRO files for analysis" <<                   std::endl;
-  std::cout << "---------------------------------------------" <<                   std::endl;
+  std::cout << "+-----------------------------------------------+" <<                   std::endl;
+  std::cout << "| MKGEXPRO --- Create GEXPRO files for analysis |" <<                   std::endl;
+  std::cout << "+-----------------------------------------------+" <<                   std::endl;
   std::cout                                                                      << std::endl;
   std::cout << "Copyright (c) 2018 by Joe Romano and the Tatonetti Lab."         << std::endl;
   std::cout <<                                                                      std::endl;
@@ -43,19 +41,25 @@ void validateOptions(po::options_description& all_opts, po::variables_map& vm) {
   std::cout <<                                                                      std::endl;
 
   std::cout << vm.count("verbose") << std::endl;
-  // std::vector<std::string> svec = vm["geo-accession"].as<std::vector<std::string>>;
-  // for (auto i: svec)
-  //   std::cout << i << std::endl;
+}
 
-  // // Validate
-  // if (vm.count("geo-accession") && vm.count("geo-file")) {
-  //   std::cout << "ERROR: " << std::endl;
-  //   std::cout << "Specify either GEO accession or GEO file, not both." << std::endl;
-  // }
-  // if (!(vm.count("geo-accession")) && !(vm.count("geo-file"))) {
-  //   std::cout << "ERROR: " << std::endl;
-  //   std::cout << "Must provide either a GEO accession or a local path to a GEO SOFT file." << std::endl;
-  // }
+/*
+ * Return ExpressionDataType enum value for provided accession
+ */
+ExpressionDataType testAccessionType(std::string id) {
+
+  std::string first3 = id.substr(0,3);
+
+  if      ( first3.compare("GSE") == 0 )
+    return TYPE_GEO_SERIES;
+  else if ( first3.compare("GDS") == 0 )
+    return TYPE_GEO_DATASET;
+  else if ( first3.compare("GPL") == 0 )
+    return TYPE_GEO_PLATFORM;
+  else if ( first3.compare("GSM") == 0 )
+    return TYPE_GEO_SAMPLE;
+  else
+    return TYPE_GEO_OTHER;
 }
 
 
@@ -129,8 +133,25 @@ int main (int argc, char* argv[]) {
       MultiGexpro* mp = new MultiGexpro();
 
       for (auto& g : accessions) {
-        Gexpro geosoft = parser.downloadGeoFile(g);
-        mp->add(geosoft);
+        ExpressionDataType et = testAccessionType(g);
+        std::cout << "Expression Data Type: " << et << std::endl;
+        switch (et) {
+        case TYPE_GEO_SERIES:
+          {
+            Gexpro geosoft = parser.downloadGeoFile(g);
+            mp->add(geosoft);
+            break;
+          }
+        case TYPE_GEO_PLATFORM:
+          {
+            parser.fetchSeriesByPlatform(g);
+            break;
+          }
+        default:
+          std::cout << "Error: GEO accession invalid or of unsupported data type" << std::endl;
+          std::cout << "Aborting" << std::endl;
+          abort();
+        }
       }
 
       std::cout << "Initialized multigexpro" << std::endl;

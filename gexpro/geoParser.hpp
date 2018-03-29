@@ -9,9 +9,12 @@
 #include <cstdlib>
 #include <cstdio>
 #include <vector>
+#include <queue>
 #include <stdio.h>
 #include <curl/curl.h>
 #include <sys/stat.h>
+#include <cassert>
+#include <unistd.h>
 
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/copy.hpp>
@@ -47,13 +50,16 @@ class GeoParser {
   AttributeBlock current_attribute_block;
   bool reading_dataset_table = false;
   bool reading_sample_table = false;
+  bool reading_platform = false;
   std::vector<std::string> data_buffer;
+  std::queue<std::string> accession_queue;
 
 public:
   // Top-level parsing functions
   Gexpro parseFile(const std::string file_name);
   Gexpro parseFile(boost::iostreams::filtering_istream gzstream, std::string proname);
   Gexpro downloadGeoFile(const std::string id);
+  void fetchSeriesByPlatform(const std::string id);
 
   // Parse components of a SOFT file
   void parseEntityIndicatorLine(Gexpro& gexpr, const std::string line);
